@@ -311,7 +311,7 @@
 
       <section class="panel" id="panel-trend" role="tabpanel" aria-labelledby="tab-trend" hidden>
         <h2>조정 후 상승 전환 초입 후보</h2>
-        <p class="panel-intro">CoinGecko 시총 순위로 범위를 먼저 좁힌 뒤, 최대 12개 자산의 90일 일별 가격을 순차 확인합니다. 조정폭, 7일 반등, 7일 저점 높임, 20일 이동평균을 함께 확인해 ‘초입 후보’와 ‘회복 관찰’을 분리합니다. 이는 설명 가능한 규칙 기반 스크리너이지 AI 자율 판단, 매수 신호, 상승 보장이 아닙니다.</p>
+        <p class="panel-intro">CoinGecko 시총 순위로 범위를 먼저 좁힌 뒤, 최대 12개 자산의 90일 일별 가격을 순차 확인합니다. 조정 후 반등뿐 아니라 하락 중인 조정 가능성도 따로 표시합니다. 조정 진행 표시는 하락이 더 이어질 수 있다는 뜻이며 매수 신호가 아닙니다. 규칙 기반 스크리너이지 AI 자율 판단이나 상승 보장이 아닙니다.</p>
         <p class="notice">검색 범위는 CoinGecko 순위 페이지에 한정되며 전체 코인을 훑지 않습니다. 무료 API 한도 보호를 위해 심층 가격 이력은 종목당 하나씩 약 12초 간격으로 조회합니다. 예상 시간: 순위 페이지마다 약 12초 + 심층 확인 대상마다 약 12초. 긴 탐색은 수 분 이상 걸릴 수 있습니다.</p>
         <article class="data-source">
           <h3>조정·반등 조건으로 후보 탐색</h3>
@@ -324,7 +324,7 @@
             <div class="field">
               <label for="trendChecks">90일 가격 이력 심층 확인 수</label>
               <select id="trendChecks"><option value="5">최대 5개</option><option value="8" selected>최대 8개</option><option value="12">최대 12개</option></select>
-              <span class="help">1차 조건 후보 중 일부만 확인합니다. 우선순위는 30일 변화율이 0%에 가까운 순입니다.</span>
+              <span class="help">30일 변화율 +5% 이하에서 7일 상승·하락 후보를 함께 선별해 심층 확인합니다. 각 방향별로 30일 변화율이 0%에 가까운 순입니다.</span>
             </div>
             <div class="field">
               <label for="trendMinCap">최소 시가총액 (선택, USD)</label>
@@ -339,7 +339,7 @@
             <button class="button primary" type="button" id="runTrendScan">추세전환 후보 찾기</button>
             <button class="button danger" type="button" id="cancelTrendScan" disabled>탐색 취소</button>
           </div>
-          <div class="data-results" id="trendResults" aria-live="polite"><div class="empty">탐색을 시작하면 설정한 순위 범위에서 실제 시세 이력을 확인합니다. 근거가 충분하지 않거나 API가 실패하면 후보를 만들어내지 않습니다.</div></div>
+          <div class="data-results" id="trendResults" aria-live="polite"><div class="empty">탐색을 시작하면 설정한 순위 범위에서 실제 시세 이력을 확인합니다. ‘조정 후 전환’과 ‘조정 진행 가능성’을 구분하고, 자료가 부족하거나 API가 실패하면 후보를 만들어내지 않습니다.</div></div>
         </article>
       </section>
 
@@ -401,7 +401,7 @@
           <iframe id="tradingViewFrame" class="tv-frame" title="TradingView 차트" loading="lazy" hidden referrerpolicy="strict-origin-when-cross-origin"></iframe>
         </div>
         <p class="notice"><b>무료·유료 경계:</b> DEX Screener·DefiLlama·CoinGecko 공개 조회는 제한과 이용조건이 있습니다. CoinMarketCap·CoinGlass는 본인 키를 위에 입력하거나 Vercel 서버 환경변수에 배포자가 등록해야 합니다. TradingView는 차트 임베드이며 과거 캔들 API나 자동 매매 신호를 제공하지 않습니다.</p>
-        <p class="small-note">Vercel Functions가 없는 file:// 직접 열기 환경에서는 <code>/api/research</code>가 실행되지 않습니다. GitHub에 <code>GemsResearch</code> 폴더를 올리고 이 폴더를 Vercel 프로젝트 루트로 선택해야 합니다.</p>
+        <p class="small-note">file:// 직접 열기에서는 Vercel Functions가 없어 개별 자산·온체인·전체 시장 요약을 조회할 수 없습니다. 다만 시총 순위와 후보 탐색은 CoinGecko 공개 API 직접 조회를 시도하며, 브라우저 CORS·요청 한도에 따릅니다. 전체 기능은 GitHub에 <code>GemsResearch</code> 폴더를 올리고 이 폴더를 Vercel 프로젝트 루트로 선택해 배포하세요.</p>
       </section>
 
       <section class="panel" id="panel-review" role="tabpanel" aria-labelledby="tab-review" hidden>
@@ -1187,8 +1187,8 @@
       }
       async function fetchMarketOverview() {
         if (location.protocol === "file:") {
-          setConnectionStatus("로컬 file:// 모드 — 실시간 API 연결 안 됨");
-          $("#marketOverview").innerHTML = '<div class="notice">현재 이 페이지는 로컬 파일로 열려 있어 시장·환율 API에 연결되지 않습니다. 실시간에 가까운 제공자 자료를 조회하려면 Vercel 배포 URL에서 열어 주세요.</div>';
+          setConnectionStatus("로컬 file:// 모드 — 전체 시장 요약 API 미연결");
+          $("#marketOverview").innerHTML = '<div class="notice">로컬 파일에서는 전체 시장 요약 서버 API가 연결되지 않습니다. 시총 순위와 USD/KRW 환율은 별도 공개 출처에 직접 요청할 수 있지만, 제공자 CORS·요청 제한에 따라 실패할 수 있습니다. 전체 시장 요약과 개별 자산·온체인 조회는 Vercel 배포 URL에서 확인하세요.</div>';
           return;
         }
         if (overviewRequest) return overviewRequest;
@@ -1409,14 +1409,26 @@
       function renderDiscoveryResults(coins, details) {
         const ordered = [...coins].sort((a, b) => (a.rank ?? Number.MAX_SAFE_INTEGER) - (b.rank ?? Number.MAX_SAFE_INTEGER));
         discoveryCoins = ordered;
-        const shown = ordered.slice(0, 100);
+        const shown = ordered.slice(0, details.searching ? 10 : 100);
         const fxRate = overviewPayload?.fx?.status === "ok" ? overviewPayload.fx.usdKrw : null;
         const rows = shown.map((coin) => `<tr><td>${escapeHtml(formatMetric(coin.rank, "rank"))}</td><td>${safeHttpsLink(coin.url, `${coin.name || "이름 확인 불가"} (${coin.symbol || "티커 확인 불가"})`) || escapeHtml(`${coin.name || "이름 확인 불가"} (${coin.symbol || "티커 확인 불가"})`)}</td><td>${escapeHtml(formatDualCurrency(coin.priceUsd, fxRate, "priceUsd"))}</td><td>${escapeHtml(formatDualCurrency(coin.marketCapUsd, fxRate))}</td><td>${escapeHtml(formatDualCurrency(coin.volume24hUsd, fxRate))}</td><td>${escapeHtml(formatMetric(coin.circulatingSupply, "circulatingSupply"))}</td><td>${escapeHtml(formatMetric(coin.totalSupply, "totalSupply"))}</td><td>${escapeHtml(formatMetric(coin.maxSupply, "maxSupply"))}</td><td>${escapeHtml(formatMetric(coin.change24hPct, "change24hPct"))}</td><td>${escapeHtml(formatMetric(coin.change7dPct, "change7dPct"))}</td><td>${escapeHtml(formatMetric(coin.change30dPct, "change30dPct"))}</td><td>${escapeHtml(formatProviderTime(coin.lastUpdated))}</td><td>${escapeHtml(formatMomentum(coin))}</td><td><button class="button" type="button" data-save-discovery-id="${escapeHtml(coin.id)}" ${coin.id ? "" : "disabled"}>후보로 저장</button> <button class="button" type="button" data-discovery-id="${escapeHtml(coin.id)}" data-discovery-symbol="${escapeHtml(coin.symbol)}" ${coin.id ? "" : "disabled"}>시장 자료 조회</button></td></tr>`).join("");
-        const partial = details.error ? `<p class="notice">조회가 중단되어 일부 페이지까지만 확인했습니다: ${escapeHtml(details.error)}. 아래 후보는 완료된 페이지의 부분 결과입니다.</p>` : "";
-        const stopped = details.cancelled ? "사용자가 중단한 부분 결과" : "검색 완료";
+        const partial = details.error ? `<p class="notice">조회가 중단되어 일부 페이지만 확인했습니다: ${escapeHtml(details.error)}. 아래는 완료된 페이지의 부분 결과입니다.</p>` : "";
+        const stopped = details.searching
+          ? `검색 진행 중 · ${details.currentPage}/${details.maxPages}페이지`
+          : details.cancelled ? "사용자가 중단한 부분 결과" : details.error ? "일부 조회 실패 — 완료된 자료" : "검색 완료";
         const applied = `시총 ≤ ${formatUsd(details.capMax)}${details.minCap === null ? "" : ` · 시총 ≥ ${formatUsd(details.minCap)}`}${details.minVolume === null ? "" : ` · 24시간 거래량 ≥ ${formatUsd(details.minVolume)}`}`;
         const notApplied = "체인·위험 성향·관찰 기간·환매 기준·프로젝트 수익/언락/보안 데이터는 이번 선별에 적용되지 않았습니다.";
-        $("#discoveryResults").innerHTML = `<div class="status-line">${stopped}: 시작 ${escapeHtml(details.startedAt)} · 마지막 자료 응답 ${escapeHtml(details.lastFetchedAt || "확인 불가")} · 조회 완료 ${details.pages} / ${details.maxPages}페이지 (${details.pages * 250}행 이하) · 시총 조건 후보 ${details.capCandidates}개 · 필터 통과 ${coins.length}개 · 필수 값 누락으로 제외 ${details.missing}개. 표시 순서는 CoinGecko 시총 순위이며 점수/추천이 아닙니다.</div><p class="data-note"><b>실제 적용 기준:</b> ${escapeHtml(applied)}. ${escapeHtml(notApplied)}</p>${fxRate ? `<p class="data-note">USD/KRW ${escapeHtml(formatMetric(fxRate, "fxRate"))} 기준 환산 참고값 · 환율 갱신 ${escapeHtml(formatProviderTime(overviewPayload.fx.updatedAt))}. 각 코인 가격은 환율 제공자의 갱신 주기와 다를 수 있습니다.</p>` : '<p class="notice">USD/KRW 환율을 가져오지 못해 한화 값은 표시하지 않습니다.</p>'}${partial}${rows.length ? `<div class="table-wrap"><table class="rank-table"><thead><tr><th>순위</th><th>자산</th><th>가격 (USD · KRW)</th><th>시가총액 (USD · KRW)</th><th>24시간 거래량 (USD · KRW)</th><th>유통량 (토큰)</th><th>총공급량 (토큰)</th><th>최대공급량 (토큰)</th><th>24시간</th><th>7일</th><th>30일</th><th>자료 갱신</th><th>단기 모멘텀</th><th>다음 단계</th></tr></thead><tbody>${rows}</tbody></table></div>` : '<div class="empty">설정한 조회 범위와 필터 안에 후보가 없습니다. 이는 시장 전체에 후보가 없다는 뜻이 아닙니다. 검색 범위를 늘리거나 선택 필터를 확인하세요.</div>'}<p class="data-note">표본은 ${details.firstRank ?? "확인 불가"}~${details.lastRank ?? "확인 불가"}위까지 조회했습니다. 페이지마다 호출 시각이 달라질 수 있으며, 개별 행의 제공자 갱신 시각을 우선 확인하세요. 세부 분야·네트워크는 각 종목 정보 조회 전까지 확인 불가입니다. 거래량은 DEX 유동성·체결 가능성을 뜻하지 않으며, 7/30일 양수도 상승 추세 전환이나 매수 신호가 아닙니다. 최대 100개만 표시합니다.</p>`;
+        const noResults = !coins.length && !details.searching && !details.error && !details.cancelled;
+        const nextPageDepth = [4, 8, 12, 20, 40, 100].find((depth) => depth > details.maxPages);
+        const recovery = details.searching && !coins.length
+          ? `<p class="data-note">아직 적용 기준을 통과한 후보가 없습니다. 조회 중에는 결과가 늘어날 수 있습니다.</p>`
+          : noResults
+            ? `<div class="notice"><b>이번 설정에서는 후보가 나오지 않았습니다.</b><br>이는 시장 전체에 후보가 없다는 뜻이 아닙니다. 단계적으로 조정해 보세요: 검색 페이지를 늘리면 더 낮은 시총 순위까지 살펴봅니다. 최소 시총·거래량을 입력했다면 선택 필터를 비운 뒤 다시 확인하세요. 그래도 결과가 없으면 ‘내 기준’에서 시총 상한을 직접 조정할 수 있습니다. 조정은 탐색 범위만 넓히며 투자 적합성이나 매수 권유를 뜻하지 않습니다.<div class="actions">${nextPageDepth ? `<button class="button" type="button" data-discovery-expand-pages="${nextPageDepth}">검색 범위를 ${nextPageDepth}페이지로 늘리기</button>` : ""}${details.minCap !== null || details.minVolume !== null ? '<button class="button" type="button" data-discovery-clear-filters="true">선택 최소 필터 비우기</button>' : ""}<button class="button" type="button" data-discovery-edit-cap="true">내 시총 상한 확인·조정</button></div></div>`
+            : "";
+        const previewNote = details.searching && shown.length < ordered.length
+          ? `<p class="data-note">진행 중 미리보기: ${shown.length}개만 표시 중 · 전체 ${ordered.length}개는 검색 완료 후 표시합니다.</p>`
+          : "";
+        $("#discoveryResults").innerHTML = `<div class="status-line">${stopped}: 시작 ${escapeHtml(details.startedAt)} · 마지막 자료 응답 ${escapeHtml(details.lastFetchedAt || "확인 불가")} · 완료 ${details.pages} / ${details.maxPages}페이지 · 시총 조건 후보 ${details.capCandidates}개 · 현재 필터 통과 ${coins.length}개 · 필수 값 누락으로 제외 ${details.missing}개. 표시 순서는 CoinGecko 시총 순위이며 점수/추천이 아닙니다.</div><p class="data-note"><b>실제 적용 기준:</b> ${escapeHtml(applied)}. ${escapeHtml(notApplied)}</p>${fxRate ? `<p class="data-note">USD/KRW ${escapeHtml(formatMetric(fxRate, "fxRate"))} 기준 환산 참고값 · 환율 갱신 ${escapeHtml(formatProviderTime(overviewPayload.fx.updatedAt))}. 각 코인 가격은 환율 제공자의 갱신 주기와 다를 수 있습니다.</p>` : '<p class="notice">USD/KRW 환율을 가져오지 못해 한화 값은 표시하지 않습니다.</p>'}${partial}${recovery}${previewNote}${rows.length ? `<div class="table-wrap"><table class="rank-table"><thead><tr><th>순위</th><th>자산</th><th>가격 (USD · KRW)</th><th>시가총액 (USD · KRW)</th><th>24시간 거래량 (USD · KRW)</th><th>유통량 (토큰)</th><th>총공급량 (토큰)</th><th>최대공급량 (토큰)</th><th>24시간</th><th>7일</th><th>30일</th><th>자료 갱신</th><th>단기 모멘텀</th><th>다음 단계</th></tr></thead><tbody>${rows}</tbody></table></div>` : details.searching ? '<div class="empty">현재까지 조건을 통과한 후보가 없습니다. 검색은 계속 진행 중입니다.</div>' : '<div class="empty">조건을 통과한 종목이 없습니다.</div>'}<p class="data-note">표본은 ${details.firstRank ?? "확인 불가"}~${details.lastRank ?? "확인 불가"}위까지 조회했습니다. 페이지마다 호출 시각이 달라질 수 있으며, 개별 행의 제공자 갱신 시각을 우선 확인하세요. 세부 분야·네트워크는 각 종목 정보 조회 전까지 확인 불가입니다. 거래량은 DEX 유동성·체결 가능성을 뜻하지 않으며, 7/30일 양수도 상승 추세 전환이나 매수 신호가 아닙니다. 최대 100개만 표시합니다.</p>`;
       }
       async function runFinder() {
         if (discoveryController || trendScanController) return;
@@ -1432,8 +1444,6 @@
           $("#discoveryResults").innerHTML = '<div class="notice">시총 상한 및 선택 필터의 숫자 범위를 확인해 주세요.</div>';
           return;
         }
-        await fetchMarketOverview();
-        await ensureDiscoveryFx();
         discoveryController = new AbortController();
         const controller = discoveryController;
         const startedAt = new Date().toLocaleString("ko-KR");
@@ -1450,6 +1460,9 @@
         $("#cancelFinder").disabled = false;
         const maxRank = maxPages * 250;
         try {
+          await fetchMarketOverview();
+          await ensureDiscoveryFx();
+          if (controller.signal.aborted) throw new DOMException("Search cancelled.", "AbortError");
           for (let page = 1; page <= maxPages; page += 1) {
             $("#discoveryResults").innerHTML = `<div class="status-line discovery-progress">요청 ${page}/${maxPages}페이지 중… 공개 API 제한을 고려해 페이지 사이 약 12초 대기합니다. ${maxPages}페이지 탐색은 최대 약 ${Math.ceil(maxPages * 12 / 60)}분이 걸릴 수 있습니다. 각 페이지의 시장 데이터 시각은 서로 다를 수 있습니다.</div>`;
             const result = await fetchRankPage(page, controller.signal);
@@ -1470,7 +1483,21 @@
               if (minVolume !== null && coin.volume24hUsd < minVolume) return;
               candidates.push(coin);
             });
-            $("#discoveryResults").innerHTML = `<div class="status-line discovery-progress">조회 중 ${page}/${maxPages}페이지 · 시총 범위 후보 ${capCandidates}개 · 필터 통과 ${candidates.length}개 · 최신 자료 응답 ${escapeHtml(lastFetchedAt || "확인 불가")}</div>`;
+            renderDiscoveryResults(candidates, {
+              searching: true,
+              currentPage: page,
+              startedAt,
+              lastFetchedAt,
+              pages,
+              maxPages,
+              capCandidates,
+              missing,
+              firstRank,
+              lastRank,
+              capMax,
+              minCap,
+              minVolume
+            });
             if (pageCoins.length < 250) break;
             if (page < maxPages) {
               await new Promise((resolve, reject) => {
@@ -1531,24 +1558,155 @@
         const rows = results.map((coin, index) => {
           const trend = coin.trend;
           const metrics = trend.metrics || {};
-          const label = trend.status === "post_correction_early_reversal"
-            ? "조정 후 상승 전환 초입 후보"
-            : "초기 회복 관찰 — 20일선 회복 전";
-          return `<tr><td>${escapeHtml(formatMetric(coin.rank, "rank"))}</td><td>${safeHttpsLink(coin.url, `${coin.name || "이름 확인 불가"} (${coin.symbol || "티커 확인 불가"})`) || escapeHtml(`${coin.name || "이름 확인 불가"} (${coin.symbol || "티커 확인 불가"})`)}</td><td>${escapeHtml(formatDualCurrency(coin.priceUsd, fxRate, "priceUsd"))}</td><td>${escapeHtml(formatDualCurrency(coin.marketCapUsd, fxRate))}</td><td>${escapeHtml(formatDualCurrency(coin.volume24hUsd, fxRate))}</td><td>${escapeHtml(formatMetric(coin.change7dPct, "change7dPct"))}</td><td>${escapeHtml(formatMetric(coin.change30dPct, "change30dPct"))}</td><td>${escapeHtml(formatMetric(metrics.drawdownFrom30dHighPct, "change30dPct"))}</td><td>${escapeHtml(formatMetric(metrics.priceVsSma20Pct, "change30dPct"))}</td><td><b>${label}</b><div class="small-note">저점 높임: ${metrics.higherLow ? "예" : "아니오"} · 20일선 상승: ${metrics.risingSma20 ? "예" : "아니오"}</div></td><td>${escapeHtml(formatProviderTime(coin.lastUpdated))}<div class="small-note">일별 가격 자료: ${escapeHtml(formatProviderTime(coin.latestPricePointAt))}</div></td><td><button class="button" type="button" data-trend-save-id="${index}">후보로 저장</button> <button class="button" type="button" data-trend-market-id="${index}">상세 확인</button></td></tr>`;
+          const labels = {
+            post_correction_early_reversal: "조정 후 상승 전환 초입 후보 — 추가 확인 필요",
+            post_correction_recovery_watch: "초기 회복 관찰 — 20일선 회복 전",
+            correction_possible: "조정 진행 가능성 — 하락 지속 여부 관찰",
+            early_reversal_attempt: "초기 반등 시도 — 조정 후 전환은 미확인",
+            trend_reversal_conditions: "상승 모멘텀 조건 — 최근 조정 후 전환은 미확인"
+          };
+          const label = labels[trend.status] || trend.label || "추세 확인 필요";
+          return `<tr><td>${escapeHtml(formatMetric(coin.rank, "rank"))}</td><td>${safeHttpsLink(coin.url, `${coin.name || "이름 확인 불가"} (${coin.symbol || "티커 확인 불가"})`) || escapeHtml(`${coin.name || "이름 확인 불가"} (${coin.symbol || "티커 확인 불가"})`)}</td><td>${escapeHtml(formatDualCurrency(coin.priceUsd, fxRate, "priceUsd"))}</td><td>${escapeHtml(formatDualCurrency(coin.marketCapUsd, fxRate))}</td><td>${escapeHtml(formatDualCurrency(coin.volume24hUsd, fxRate))}</td><td>${escapeHtml(formatMetric(coin.change7dPct, "change7dPct"))}</td><td>${escapeHtml(formatMetric(coin.change30dPct, "change30dPct"))}</td><td>${escapeHtml(formatMetric(metrics.drawdownFrom30dHighPct, "change30dPct"))}</td><td>${escapeHtml(formatMetric(metrics.priceVsSma20Pct, "change30dPct"))}</td><td><b>${escapeHtml(label)}</b><div class="small-note">저점 높임: ${metrics.higherLow ? "예" : "아니오"} · 20일선 상승: ${metrics.risingSma20 ? "예" : "아니오"}</div></td><td>${escapeHtml(formatProviderTime(coin.lastUpdated))}<div class="small-note">일별 가격 자료: ${escapeHtml(formatProviderTime(coin.latestPricePointAt))}</div></td><td><button class="button" type="button" data-trend-save-id="${index}">후보로 저장</button> <button class="button" type="button" data-trend-market-id="${index}">상세 확인</button></td></tr>`;
         }).join("");
-        const stateLabel = details.cancelled ? "사용자가 중단한 부분 결과" : details.error ? "일부 조회 실패 — 완료 자료만 표시" : "탐색 완료";
-        const failures = details.failures.length
-          ? `<p class="notice">90일 이력 조회 실패 ${details.failures.length}건: ${details.failures.slice(0, 8).map((failure) => `${escapeHtml(failure.name)} — ${escapeHtml(failure.message)}`).join("; ")}${details.failures.length > 8 ? " 등" : ""}. 실패 종목은 후보로 간주하지 않았습니다.</p>`
+        const failuresFound = details.failures || [];
+        const stateLabel = details.searching
+          ? details.phase === "history" ? `90일 이력 확인 중 ${details.historyIndex}/${details.historyTotal}` : `순위 검색 중 ${details.currentPage}/${details.maxPages}페이지`
+          : details.cancelled ? "사용자가 중단한 부분 결과" : details.error ? "일부 조회 실패 — 완료 자료만 표시" : "탐색 완료";
+        const failures = failuresFound.length
+          ? `<p class="notice">90일 이력 조회 실패 ${failuresFound.length}건: ${failuresFound.slice(0, 8).map((failure) => `${escapeHtml(failure.name)} — ${escapeHtml(failure.message)}`).join("; ")}${failuresFound.length > 8 ? " 등" : ""}. 실패 종목은 후보로 간주하지 않았습니다.</p>`
           : "";
-        $("#trendResults").innerHTML = `<div class="status-line">${stateLabel} · 시작 ${escapeHtml(details.startedAt)} · 마지막 자료 응답 ${escapeHtml(details.lastFetchedAt || "확인 불가")} · 순위 페이지 ${details.pages}/${details.maxPages} · 페이지에서 확인한 자산 ${details.examined}개 · 1차 조건 통과 ${details.prefiltered}개 · 90일 이력 확인 ${details.checked}개 · 1차 조건 자료 누락 ${details.missing}개 · 초기 전환/회복 후보 ${results.length}개</div><p class="data-note"><b>실제 적용 기준:</b> 시총 ≤ ${escapeHtml(formatUsd(details.capMax))}${details.minCap === null ? "" : ` · 시총 ≥ ${escapeHtml(formatUsd(details.minCap))}`}${details.minVolume === null ? "" : ` · 24시간 거래량 ≥ ${escapeHtml(formatUsd(details.minVolume))}`} · 1차 검색은 7일 변화율 양수 및 30일 변화율 +5% 이하 · 90일 이력에서 최근 30일 고점 대비 -8% 이상 조정 또는 30일 수익률 -8% 이하와 7일 저점 높임·20일선 상승 확인. 초입 후보는 현재 가격이 20일선 위인 경우입니다.</p>${fxRate ? `<p class="data-note">가격·시총·거래량의 KRW는 USD/KRW ${escapeHtml(formatMetric(fxRate, "fxRate"))} 기준 참고 환산 · 환율 갱신 ${escapeHtml(formatProviderTime(overviewPayload.fx.updatedAt))}.</p>` : '<p class="notice">USD/KRW 환율 자료가 연결되지 않아 한화 값은 표시하지 않습니다.</p>'}${details.error ? `<p class="notice">탐색이 조기 종료됐습니다: ${escapeHtml(details.error)}. 완료된 응답만 사용했습니다.</p>` : ""}${failures}${results.length ? `<div class="table-wrap"><table class="rank-table"><thead><tr><th>순위</th><th>자산</th><th>가격 USD · KRW</th><th>시총 USD · KRW</th><th>24h 거래량 USD · KRW</th><th>7일</th><th>30일</th><th>30일 고점 대비</th><th>현재가 vs 20일선</th><th>규칙 판정</th><th>자료 갱신 시각</th><th>다음 단계</th></tr></thead><tbody>${rows}</tbody></table></div>` : '<div class="empty">현재 조회한 표본에서 조건을 충족한 후보가 없습니다. 전체 시장에 후보가 없다는 뜻은 아닙니다. 범위를 늘리거나 나중에 다시 확인하세요.</div>'}<p class="data-note">90일 일별 가격 기반이며 자료 시점은 자산별로 다를 수 있습니다. 거래량은 DEX 유동성·실제 체결 가능성을 뜻하지 않습니다. 이 화면은 수익 가능성, 토큰 신원, 온체인 사용량, 언락·보안을 판정하지 않습니다.</p>`;
+        const noResults = !results.length && !details.searching && !details.error && !details.cancelled;
+        const pageDepths = [1, 2, 4, 8, 12];
+        const checkDepths = [5, 8, 12];
+        const nextPageDepth = pageDepths.find((depth) => depth > details.maxPages);
+        const nextCheckDepth = checkDepths.find((depth) => depth > details.maxChecks);
+        const guidance = noResults
+          ? `<div class="notice"><b>이번 표본에서는 조건에 맞는 패턴을 확인하지 못했습니다.</b><br>시장 전체에 후보가 없다는 뜻은 아닙니다. 검색 순위 범위나 90일 이력 확인 수를 늘려 보세요. 최소 시총·거래량 필터를 설정했다면 비운 뒤 다시 확인할 수 있습니다. 시총 상한은 자동으로 바꾸지 않으며, 필요하면 ‘내 기준’에서 직접 조정하세요. 조정 진행 후보는 하락이 계속될 수 있으므로 반전 후보와 구분해 확인합니다.<div class="actions">${nextPageDepth ? `<button class="button" type="button" data-trend-expand-pages="${nextPageDepth}">순위 범위를 ${nextPageDepth}페이지로 늘리기</button>` : ""}${nextCheckDepth ? `<button class="button" type="button" data-trend-expand-checks="${nextCheckDepth}">90일 확인 수를 ${nextCheckDepth}개로 늘리기</button>` : ""}${details.minCap !== null || details.minVolume !== null ? '<button class="button" type="button" data-trend-clear-filters="true">선택 최소 필터 비우기</button>' : ""}<button class="button" type="button" data-trend-edit-cap="true">내 시총 상한 확인·조정</button></div></div>`
+          : "";
+        const progressNote = details.searching
+          ? '<p class="data-note">순위 변화가 양수인 반등 후보와 음수인 조정 진행 후보를 모두 살펴봅니다.</p>'
+          : "";
+        const emptyMessage = details.searching
+          ? "아직 패턴이 확인된 종목이 없습니다. 탐색은 계속 진행 중입니다."
+          : "현재 조회한 표본에서 조건을 충족한 패턴이 없습니다.";
+        $("#trendResults").innerHTML = `<div class="status-line">${stateLabel} · 시작 ${escapeHtml(details.startedAt)} · 마지막 자료 응답 ${escapeHtml(details.lastFetchedAt || "확인 불가")} · 순위 페이지 ${details.pages}/${details.maxPages} · 페이지에서 확인한 자산 ${details.examined}개 · 1차 조건 통과 ${details.prefiltered}개 · 90일 이력 확인 ${details.checked}개 · 1차 조건 자료 누락 ${details.missing}개 · 관찰 패턴 ${results.length}개</div><p class="data-note"><b>실제 적용 기준:</b> 시총 ≤ ${escapeHtml(formatUsd(details.capMax))}${details.minCap === null ? "" : ` · 시총 ≥ ${escapeHtml(formatUsd(details.minCap))}`}${details.minVolume === null ? "" : ` · 24시간 거래량 ≥ ${escapeHtml(formatUsd(details.minVolume))}`} · 1차 검색은 30일 변화율 +5% 이하에서 7일 변화율의 상승·하락 방향을 모두 포함합니다. 90일 이력에서 초입 전환은 최근 30일 고점 대비 8% 이상 하락 또는 30일 수익률 -8% 이하의 조정, 7일 저점 높임, 20일선 상승 및 현재가의 20일선 돌파를 함께 봅니다. 조정 진행 가능성은 현재가가 20일선 아래이고 7일 변화율도 음수인 경우로 별도 표시합니다.</p>${fxRate ? `<p class="data-note">가격·시총·거래량의 KRW는 USD/KRW ${escapeHtml(formatMetric(fxRate, "fxRate"))} 기준 참고 환산 · 환율 갱신 ${escapeHtml(formatProviderTime(overviewPayload.fx.updatedAt))}.</p>` : '<p class="notice">USD/KRW 환율 자료가 연결되지 않아 한화 값은 표시하지 않습니다.</p>'}${details.error ? `<p class="notice">탐색이 조기 종료됐습니다: ${escapeHtml(details.error)}. 완료된 응답만 사용했습니다.</p>` : ""}${failures}${guidance}${progressNote}${rows ? `<div class="table-wrap"><table class="rank-table"><thead><tr><th>순위</th><th>자산</th><th>가격 USD · KRW</th><th>시총 USD · KRW</th><th>24h 거래량 USD · KRW</th><th>7일</th><th>30일</th><th>30일 고점 대비</th><th>현재가 vs 20일선</th><th>규칙 판정</th><th>자료 갱신 시각</th><th>다음 단계</th></tr></thead><tbody>${rows}</tbody></table></div>` : `<div class="empty">${emptyMessage}</div>`}<p class="data-note">90일 일별 가격 기반이며 자료 시점은 자산별로 다를 수 있습니다. 거래량은 DEX 유동성·실제 체결 가능성을 뜻하지 않습니다. 조정 진행 표시는 하락 지속 가능성도 뜻하므로 매수 신호가 아닙니다. 이 화면은 수익 가능성, 토큰 신원, 온체인 사용량, 언락·보안을 판정하지 않습니다.</p>`;
+      }
+      function analyzeTrendHistory(prices) {
+        if (!Array.isArray(prices)) throw new Error("CoinGecko 가격 이력 응답에 가격 목록이 없습니다.");
+        const daily = new Map();
+        prices.forEach((point) => {
+          if (!Array.isArray(point) || !Number.isFinite(point[0]) || !Number.isFinite(point[1]) || point[1] <= 0) return;
+          daily.set(new Date(point[0]).toISOString().slice(0, 10), point[1]);
+        });
+        const closes = [...daily.entries()]
+          .sort(([dateA], [dateB]) => dateA.localeCompare(dateB))
+          .slice(-90)
+          .map(([, price]) => price);
+        if (closes.length < 20) {
+          return {
+            status: "insufficient_data",
+            label: "추세 확인 불가",
+            sampleDays: closes.length,
+            observations: ["일별 가격 이력이 20일 미만이라 보수적인 판단 기준을 적용할 수 없습니다."],
+            disclaimer: "짧은 이력이나 상장 초기 데이터만으로 추세 전환을 단정하지 않습니다."
+          };
+        }
+        const movingAverage = (values, length) => values.length < length
+          ? null
+          : values.slice(-length).reduce((sum, value) => sum + value, 0) / length;
+        const latest = closes.at(-1);
+        const returnOver = (days) => closes.length > days ? (latest / closes[closes.length - 1 - days] - 1) * 100 : null;
+        const sma20 = movingAverage(closes, 20);
+        const sma50 = movingAverage(closes, 50);
+        const sma20Prior = closes.length >= 27 ? movingAverage(closes.slice(0, -7), 20) : null;
+        const recentLow = Math.min(...closes.slice(-7));
+        const priorLow = Math.min(...closes.slice(-14, -7));
+        const high30 = Math.max(...closes.slice(-30));
+        const drawdownFrom30dHighPct = (latest / high30 - 1) * 100;
+        const return7dPct = returnOver(7);
+        const return30dPct = returnOver(30);
+        const higherLow = recentLow > priorLow;
+        const risingSma20 = sma20Prior !== null && sma20 > sma20Prior;
+        const correctionDetected = drawdownFrom30dHighPct <= -8 + 1e-9 || (return30dPct !== null && return30dPct <= -8 + 1e-9);
+        const reboundStructure = return7dPct > 0 && higherLow && risingSma20;
+        let status = "mixed";
+        let label = "혼조·추세 전환 확인 중";
+        if (correctionDetected && latest > sma20 && reboundStructure) {
+          status = "post_correction_early_reversal";
+          label = "조정 후 상승 전환 초입 후보 — 추가 확인 필요";
+        } else if (correctionDetected && reboundStructure) {
+          status = "post_correction_recovery_watch";
+          label = "조정 후 초기 회복 관찰 — 20일선 회복 전";
+        } else if (sma50 !== null && latest > sma20 && sma20 > sma50 && return7dPct > 0 && higherLow && risingSma20) {
+          status = "trend_reversal_conditions";
+          label = "상승 모멘텀 조건 충족 — 최근 조정 후 전환은 미확인";
+        } else if (latest < sma20 && return7dPct < 0) {
+          status = "correction_possible";
+          label = "조정·약세 진행 가능성";
+        } else if (reboundStructure) {
+          status = "early_reversal_attempt";
+          label = "초기 반등 조건 일부 충족 — 명확한 조정 후 전환은 미확인";
+        }
+        return {
+          status,
+          label,
+          sampleDays: closes.length,
+          asOf: new Date().toISOString(),
+          correctionDetected,
+          metrics: {
+            return7dPct,
+            return30dPct,
+            priceVsSma20Pct: (latest / sma20 - 1) * 100,
+            sma20VsSma50Pct: sma50 === null ? null : (sma20 / sma50 - 1) * 100,
+            drawdownFrom30dHighPct,
+            higherLow,
+            risingSma20
+          },
+          observations: ["일별 종가에서 7일·30일 수익률, 20일·50일 단순이동평균과 저점 구조를 계산했습니다."],
+          disclaimer: "규칙 기반 가격 모멘텀 참고치이며 조정 종료나 미래 상승을 확정하지 않습니다."
+        };
+      }
+      async function fetchTrendHistory(geckoId, signal) {
+        const url = `https://api.coingecko.com/api/v3/coins/${encodeURIComponent(geckoId)}/market_chart?vs_currency=usd&days=90&interval=daily`;
+        const direct = async () => {
+          const response = await fetch(url, {
+            headers: { Accept: "application/json" },
+            cache: "no-store",
+            signal
+          });
+          if (!response.ok) throw new Error(`CoinGecko 공개 가격 이력 응답 실패 (HTTP ${response.status})`);
+          const history = await response.json();
+          if (!Array.isArray(history.prices)) throw new Error("CoinGecko 공개 가격 이력 응답 형식이 예상과 다릅니다.");
+          const latestPricePointAt = history.prices.at(-1)?.[0]
+            ? new Date(history.prices.at(-1)[0]).toISOString()
+            : null;
+          if (!latestPricePointAt) throw new Error("90일 가격 이력에 최신 시각이 없습니다.");
+          return {
+            fetchedAt: new Date().toISOString(),
+            latestPricePointAt,
+            trend: analyzeTrendHistory(history.prices)
+          };
+        };
+        if (location.protocol === "file:") return direct();
+        try {
+          const response = await fetch(`/api/research?mode=trend&geckoId=${encodeURIComponent(geckoId)}`, {
+            headers: { Accept: "application/json" },
+            cache: "no-store",
+            signal
+          });
+          if ([403, 404, 405].includes(response.status)) return direct();
+          let result;
+          try { result = await response.json(); }
+          catch { throw new Error("가격 이력 API가 JSON이 아닌 응답을 반환했습니다."); }
+          if (!response.ok) throw new Error(result.error || `가격 이력 조회 실패 (${response.status})`);
+          return result;
+        } catch (error) {
+          if (error.name === "AbortError" || error.message?.includes("가격 이력 API가 JSON")) throw error;
+          return direct();
+        }
       }
       async function runTrendScan() {
         if (trendScanController || discoveryController) return;
-        if (location.protocol === "file:") {
-          setConnectionStatus("로컬 file:// 모드 — 실시간 API 연결 안 됨");
-          $("#trendResults").innerHTML = '<div class="notice">실제 추세 후보 탐색에는 Vercel API가 필요합니다. 이 로컬 파일에서는 시장 데이터를 임의로 표시하지 않습니다.</div>';
-          return;
-        }
         const capMax = Number(state.profile.capMax);
         const minCapText = $("#trendMinCap").value.trim();
         const minVolumeText = $("#trendMinVolume").value.trim();
@@ -1581,9 +1739,13 @@
         $("#runFinder").disabled = true;
         try {
           await fetchMarketOverview();
+          await ensureDiscoveryFx();
           if (controller.signal.aborted) throw new DOMException("Search cancelled.", "AbortError");
           for (let page = 1; page <= maxPages; page += 1) {
-            $("#trendResults").innerHTML = `<div class="status-line">CoinGecko 시총 페이지 ${page}/${maxPages} 조회 중… 이후 90일 가격 이력 후보는 최대 ${maxChecks}개까지 약 12초 간격으로 확인합니다.</div>`;
+            renderTrendScanResults(matches, {
+              searching: true, phase: "rank", currentPage: page, startedAt, lastFetchedAt, pages,
+              maxPages, maxChecks, examined, prefiltered: screened.size, checked, missing, failures, capMax, minCap, minVolume
+            });
             const result = await fetchRankPage(page, controller.signal);
             if (!Array.isArray(result.coins)) throw new Error(`시총 페이지 ${page} 응답에 종목 목록이 없습니다.`);
             pages += 1;
@@ -1602,10 +1764,13 @@
                 return;
               }
               if (minVolume !== null && coin.volume24hUsd < minVolume) return;
-              if (coin.change7dPct <= 0 || coin.change30dPct > 5) return;
+              if (coin.change7dPct === 0 || coin.change30dPct > 5) return;
               if (!screened.has(coin.id)) screened.set(coin.id, coin);
             });
-            $("#trendResults").innerHTML = `<div class="status-line">순위 검색 ${page}/${maxPages}페이지 · ${examined}개 확인 · 1차 조건 통과 ${screened.size}개 · 심층 확인은 최대 ${maxChecks}개</div>`;
+            renderTrendScanResults(matches, {
+              searching: true, phase: "rank", currentPage: page, startedAt, lastFetchedAt, pages,
+              maxPages, maxChecks, examined, prefiltered: screened.size, checked, missing, failures, capMax, minCap, minVolume
+            });
             if (result.coins.length < 250) break;
             if (page < maxPages) {
               await new Promise((resolve, reject) => {
@@ -1626,9 +1791,15 @@
               });
             }
           }
-          const shortlist = [...screened.values()]
-            .sort((a, b) => Math.abs(a.change30dPct) - Math.abs(b.change30dPct) || b.change7dPct - a.change7dPct || (a.rank ?? Infinity) - (b.rank ?? Infinity))
-            .slice(0, maxChecks);
+          const sortForReview = (a, b) => Math.abs(a.change30dPct) - Math.abs(b.change30dPct) ||
+            Math.abs(a.change7dPct) - Math.abs(b.change7dPct) || (a.rank ?? Infinity) - (b.rank ?? Infinity);
+          const rising = [...screened.values()].filter((coin) => coin.change7dPct > 0).sort(sortForReview);
+          const correcting = [...screened.values()].filter((coin) => coin.change7dPct < 0).sort(sortForReview);
+          const shortlist = [];
+          while (shortlist.length < maxChecks && (rising.length || correcting.length)) {
+            if (rising.length) shortlist.push(rising.shift());
+            if (shortlist.length < maxChecks && correcting.length) shortlist.push(correcting.shift());
+          }
           for (let index = 0; index < shortlist.length; index += 1) {
             if (controller.signal.aborted) throw new DOMException("Search cancelled.", "AbortError");
             if (index > 0) {
@@ -1650,23 +1821,24 @@
               });
             }
             const coin = shortlist[index];
-            $("#trendResults").innerHTML = `<div class="status-line">90일 가격 이력 심층 확인 ${index + 1}/${shortlist.length}: ${escapeHtml(coin.name)} (${escapeHtml(coin.symbol)})…</div>`;
+            renderTrendScanResults(matches, {
+              searching: true, phase: "history", historyIndex: index + 1, historyTotal: shortlist.length,
+              startedAt, lastFetchedAt, pages, maxPages, maxChecks, examined, prefiltered: screened.size,
+              checked, missing, failures, capMax, minCap, minVolume
+            });
             try {
-              const response = await fetch(`/api/research?mode=trend&geckoId=${encodeURIComponent(coin.id)}`, {
-                headers: { Accept: "application/json" },
-                cache: "no-store",
-                signal: controller.signal
-              });
-              let result;
-              try { result = await response.json(); }
-              catch { throw new Error("가격 이력 API가 JSON이 아닌 응답을 반환했습니다."); }
-              if (!response.ok) throw new Error(result.error || `가격 이력 조회 실패 (${response.status})`);
+              const result = await fetchTrendHistory(coin.id, controller.signal);
               lastFetchedAt = result.fetchedAt ? new Date(result.fetchedAt).toLocaleString("ko-KR") : lastFetchedAt;
               if (!result.trend || !result.latestPricePointAt) throw new Error("90일 가격 이력에 필수 자료가 없습니다.");
               checked += 1;
-              if (["post_correction_early_reversal", "post_correction_recovery_watch"].includes(result.trend.status)) {
+              if (["post_correction_early_reversal", "post_correction_recovery_watch", "correction_possible"].includes(result.trend.status)) {
                 matches.push({ ...coin, trend: result.trend, latestPricePointAt: result.latestPricePointAt });
               }
+              renderTrendScanResults(matches, {
+                searching: true, phase: "history", historyIndex: index + 1, historyTotal: shortlist.length,
+                startedAt, lastFetchedAt, pages, maxPages, maxChecks, examined, prefiltered: screened.size,
+                checked, missing, failures, capMax, minCap, minVolume
+              });
             } catch (error) {
               if (error.name === "AbortError") throw error;
               console.error(`Trend history failed for ${coin.id}.`, error);
@@ -1689,6 +1861,7 @@
             lastFetchedAt,
             pages,
             maxPages,
+            maxChecks,
             examined,
             prefiltered: screened.size,
             checked,
@@ -1708,6 +1881,32 @@
       $("#cancelFinder").addEventListener("click", () => discoveryController?.abort());
       $("#cancelTrendScan").addEventListener("click", () => trendScanController?.abort());
       $("#trendResults").addEventListener("click", (event) => {
+        const expandPagesButton = event.target.closest("[data-trend-expand-pages]");
+        if (expandPagesButton) {
+          $("#trendPages").value = expandPagesButton.dataset.trendExpandPages;
+          runTrendScan();
+          return;
+        }
+        const expandChecksButton = event.target.closest("[data-trend-expand-checks]");
+        if (expandChecksButton) {
+          $("#trendChecks").value = expandChecksButton.dataset.trendExpandChecks;
+          runTrendScan();
+          return;
+        }
+        const clearFiltersButton = event.target.closest("[data-trend-clear-filters]");
+        if (clearFiltersButton) {
+          $("#trendMinCap").value = "";
+          $("#trendMinVolume").value = "";
+          runTrendScan();
+          return;
+        }
+        const editCapButton = event.target.closest("[data-trend-edit-cap]");
+        if (editCapButton) {
+          setTab("profile");
+          $("#capMax").focus();
+          $("#capMax").scrollIntoView({ behavior: "smooth", block: "center" });
+          return;
+        }
         const saveButton = event.target.closest("[data-trend-save-id]");
         const marketButton = event.target.closest("[data-trend-market-id]");
         const index = Number((saveButton || marketButton)?.dataset.trendSaveId ?? marketButton?.dataset.trendMarketId);
@@ -1725,7 +1924,27 @@
         $("#fetchMarket").click();
       });
       $("#discoveryResults").addEventListener("click", (event) => {
-        const saveButton = event.target.closest("[data-save-discovery-id]");
+      const expandButton = event.target.closest("[data-discovery-expand-pages]");
+      if (expandButton) {
+        $("#discoveryPages").value = expandButton.dataset.discoveryExpandPages;
+        runFinder();
+        return;
+      }
+      const clearFiltersButton = event.target.closest("[data-discovery-clear-filters]");
+      if (clearFiltersButton) {
+        $("#discoveryMinCap").value = "";
+        $("#discoveryMinVolume").value = "";
+        runFinder();
+        return;
+      }
+      const editCapButton = event.target.closest("[data-discovery-edit-cap]");
+      if (editCapButton) {
+        setTab("profile");
+        $("#capMax").focus();
+        $("#capMax").scrollIntoView({ behavior: "smooth", block: "center" });
+        return;
+      }
+      const saveButton = event.target.closest("[data-save-discovery-id]");
         if (saveButton) {
           const coin = discoveryCoins.find((item) => item.id === saveButton.dataset.saveDiscoveryId);
           if (coin) saveDiscoveryCandidate(coin);
@@ -1853,8 +2072,11 @@
       if (tab.dataset.tab === "market") {
         if (location.protocol === "file:") {
           setConnectionStatus("로컬 file:// 모드 — 실시간 API 연결 안 됨");
-          $("#marketOverview").innerHTML = '<div class="notice">실시간에 가까운 제공자 데이터를 조회하려면 Vercel 배포 URL이 필요합니다. 이 로컬 파일에서는 시장·환율·순위를 조회하지 못합니다.</div>';
-          $("#rankResults").innerHTML = '<div class="notice">CoinGecko 시총 순위 API가 연결되지 않았습니다. 종목이나 시세를 임의로 표시하지 않습니다.</div>';
+          fetchMarketOverview();
+          ensureDiscoveryFx().then(() => {
+            if (rankingPayload) renderRanking(rankingPayload, $("#rankFilter").value);
+            else if (!$("#fetchRanking").disabled) fetchRanking(1);
+          });
         } else {
           fetchMarketOverview();
           if (!rankingPayload && !$("#fetchRanking").disabled) fetchRanking(1);

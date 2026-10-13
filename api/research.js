@@ -244,7 +244,7 @@ module.exports = async function handler(req, res) {
   if (cmcId && !/^\d{1,12}$/.test(cmcId)) errors.push("CoinMarketCap ID는 숫자여야 합니다.");
   if (chain && !CHAIN_NETWORKS[chain]) errors.push("지원되지 않는 체인입니다.");
   if (address && !chain) errors.push("컨트랙트 주소를 조회할 때 체인을 선택해야 합니다.");
-  if (address && chain && CHAIN_NETWORKS[chain].evm && !/^0x[a-fA-F0-9]{40}$/.test(address)) errors.push("EVM 토큰 주소 형식이 올바르지 않습니다.");
+  if (address && chain && CHAIN_NETWORKS[chain]?.evm && !/^0x[a-fA-F0-9]{40}$/.test(address)) errors.push("EVM 토큰 주소 형식이 올바르지 않습니다.");
   if (address && chain === "solana" && !/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(address)) errors.push("Solana 토큰 주소 형식이 올바르지 않습니다.");
   if (tradingViewSymbol && !/^[A-Z0-9:_-]{1,40}$/.test(tradingViewSymbol)) errors.push("TradingView 심볼 형식이 올바르지 않습니다.");
   if (errors.length) return reply(res, 400, { error: errors.join(" ") });
