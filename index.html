@@ -70,6 +70,24 @@
     .button:disabled { cursor: not-allowed; opacity: .55; }
     .notice { margin: 14px 0 0; padding: 12px 14px; border: 1px solid #f0dfc2; border-radius: 11px; background: var(--amber-soft); color: #65491f; font-size: 12px; }
     .status-line { margin: 0 0 14px; padding: 10px 12px; border-radius: 9px; background: var(--green-soft); color: #245b40; font-size: 12px; }
+    .scan-activity { margin-top: 14px; padding: 14px; border: 1px solid #bad8c5; border-radius: 12px; background: #f4faf6; }
+    .scan-activity[hidden] { display: none; }
+    .scan-activity-head { display: flex; align-items: center; gap: 10px; }
+    .scan-activity-copy { flex: 1; min-width: 0; }
+    .scan-activity-copy strong { display: block; font-size: 13px; }
+    .scan-activity-copy p { margin: 3px 0 0; color: var(--muted); font-size: 11px; }
+    .scan-elapsed { color: var(--muted); font-size: 11px; white-space: nowrap; }
+    .scan-spinner { width: 18px; height: 18px; flex: 0 0 18px; border: 2px solid #c7dfd0; border-top-color: var(--green); border-radius: 50%; animation: scan-spin .8s linear infinite; }
+    .scan-activity[data-state="done"] .scan-spinner, .scan-activity[data-state="error"] .scan-spinner, .scan-activity[data-state="cancelled"] .scan-spinner { display: none; }
+    .scan-progress { height: 7px; overflow: hidden; margin-top: 12px; border-radius: 99px; background: #dfebe3; }
+    .scan-progress-bar { width: 0; height: 100%; border-radius: inherit; background: var(--green); transition: width .25s ease; }
+    .scan-activity[data-state="running"] .scan-progress-bar { background-image: linear-gradient(110deg, transparent 20%, rgba(255,255,255,.6) 50%, transparent 80%); background-size: 220% 100%; animation: scan-shimmer 1.5s linear infinite; }
+    .scan-activity[data-state="done"] .scan-progress-bar { background: #398255; }
+    .scan-activity[data-state="error"] .scan-progress-bar { background: #b8483d; }
+    .scan-activity[data-state="cancelled"] .scan-progress-bar { background: #a88031; }
+    @keyframes scan-spin { to { transform: rotate(360deg); } }
+    @keyframes scan-shimmer { to { background-position: -220% 0; } }
+    @media (prefers-reduced-motion: reduce) { .scan-spinner, .scan-activity[data-state="running"] .scan-progress-bar { animation: none; } }
     .candidate-list { display: grid; gap: 8px; }
     .candidate-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px; border: 1px solid var(--line); border-radius: 11px; }
     .candidate-row button { flex: 0 0 auto; }
@@ -279,6 +297,15 @@
             <button class="button primary" type="button" id="runFinder">후보 자동 탐색</button>
             <button class="button danger" type="button" id="cancelFinder" disabled>탐색 취소</button>
           </div>
+          <div class="scan-activity" id="discoveryActivity" role="status" aria-live="polite" aria-atomic="true" hidden>
+            <div class="scan-activity-head">
+              <span class="scan-spinner" aria-hidden="true"></span>
+              <div class="scan-activity-copy"><strong id="discoveryActivityTitle">탐색 준비 중</strong><p id="discoveryActivityDetail"></p></div>
+              <span class="scan-elapsed" id="discoveryElapsed" aria-hidden="true"></span>
+              <span class="scan-elapsed" id="discoveryWaitCountdown" aria-hidden="true" hidden></span>
+            </div>
+            <div class="scan-progress"><div class="scan-progress-bar" id="discoveryProgressBar" role="progressbar" aria-label="자동 후보 탐색 진행률" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div></div>
+          </div>
           <div class="data-results" id="discoveryResults" aria-live="polite"><div class="empty">후보 자동 탐색을 누르면 실제 시총 페이지를 순차 조회합니다. 종목명을 만들어내거나 빈 데이터를 채우지 않습니다.</div></div>
         </article>
         <h2 style="margin-top:22px">개인화 조사 요청문 만들기</h2>
@@ -338,6 +365,15 @@
           <div class="actions">
             <button class="button primary" type="button" id="runTrendScan">추세전환 후보 찾기</button>
             <button class="button danger" type="button" id="cancelTrendScan" disabled>탐색 취소</button>
+          </div>
+          <div class="scan-activity" id="trendActivity" role="status" aria-live="polite" aria-atomic="true" hidden>
+            <div class="scan-activity-head">
+              <span class="scan-spinner" aria-hidden="true"></span>
+              <div class="scan-activity-copy"><strong id="trendActivityTitle">탐색 준비 중</strong><p id="trendActivityDetail"></p></div>
+              <span class="scan-elapsed" id="trendElapsed" aria-hidden="true"></span>
+              <span class="scan-elapsed" id="trendWaitCountdown" aria-hidden="true" hidden></span>
+            </div>
+            <div class="scan-progress"><div class="scan-progress-bar" id="trendProgressBar" role="progressbar" aria-label="추세 후보 탐색 진행률" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div></div>
           </div>
           <div class="data-results" id="trendResults" aria-live="polite"><div class="empty">탐색을 시작하면 설정한 순위 범위에서 실제 시세 이력을 확인합니다. ‘조정 후 전환’과 ‘조정 진행 가능성’을 구분하고, 자료가 부족하거나 API가 실패하면 후보를 만들어내지 않습니다.</div></div>
         </article>
@@ -1406,9 +1442,90 @@
         return "기간별 방향 혼조";
       }
       let discoveryCoins = [];
+      let discoveryActivityTimer = null;
+      let discoveryStartedAtMs = null;
+      let discoveryWaitUntil = null;
+      function updateDiscoveryActivityClock() {
+        const elapsed = discoveryStartedAtMs === null ? 0 : Math.max(0, Math.floor((Date.now() - discoveryStartedAtMs) / 1000));
+        const minutes = Math.floor(elapsed / 60);
+        const seconds = elapsed % 60;
+        $("#discoveryElapsed").textContent = `경과 ${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+        const remaining = discoveryWaitUntil === null ? 0 : Math.max(0, Math.ceil((discoveryWaitUntil - Date.now()) / 1000));
+        const countdown = $("#discoveryWaitCountdown");
+        if (remaining > 0) {
+          countdown.hidden = false;
+          countdown.textContent = `다음 요청까지 ${remaining}초`;
+        } else {
+          countdown.hidden = true;
+          countdown.textContent = "";
+        }
+      }
+      function renderDiscoveryActivity(details) {
+        const root = $("#discoveryActivity");
+        const title = $("#discoveryActivityTitle");
+        const detail = $("#discoveryActivityDetail");
+        const progressBar = $("#discoveryProgressBar");
+        root.hidden = false;
+        root.dataset.state = details.searching ? "running" : details.cancelled ? "cancelled" : details.error ? "error" : "done";
+        let progress = 0;
+        if (details.searching) {
+          if (details.phase === "preparing") {
+            title.textContent = "탐색 시작 · 데이터 연결 준비 중";
+            detail.textContent = "환율과 시장 자료를 확인한 뒤 CoinGecko 순위 조회를 시작합니다.";
+            progress = 2;
+          } else if (details.phase === "wait") {
+            title.textContent = `페이지 ${details.currentPage}/${details.maxPages} 사이에서 대기 중`;
+            detail.textContent = "무료 공개 API 요청 간격을 지키고 있습니다.";
+            progress = details.pages / Math.max(1, details.maxPages) * 90;
+          } else {
+            title.textContent = `시총 순위 ${details.currentPage}/${details.maxPages}페이지 요청 중`;
+            detail.textContent = `${details.examined}개 자산 확인 · 시총 조건 후보 ${details.capCandidates}개 · 현재 필터 통과 ${details.matches}개`;
+            progress = details.pages / Math.max(1, details.maxPages) * 90;
+          }
+        } else {
+          title.textContent = details.cancelled
+            ? "후보 탐색이 취소되었습니다"
+            : details.error
+              ? "후보 탐색이 오류로 종료되었습니다"
+              : `후보 탐색 완료 · ${details.matches}개`;
+          detail.textContent = details.cancelled
+            ? "완료된 페이지에서 확인한 부분 결과만 남겼습니다."
+            : details.error
+              ? "완료된 페이지의 결과만 반영했습니다. 아래에서 오류 원인을 확인하세요."
+              : `${details.pages}/${details.maxPages}페이지 · ${details.examined}개 자산 확인`;
+          progress = details.cancelled || details.error ? Math.min(95, details.phaseProgress || 0) : 100;
+        }
+        progress = Math.max(0, Math.min(100, Math.round(progress)));
+        progressBar.style.width = `${progress}%`;
+        progressBar.setAttribute("aria-valuenow", String(progress));
+        updateDiscoveryActivityClock();
+      }
+      function waitForDiscoveryScan(controller, durationMs) {
+        discoveryWaitUntil = Date.now() + durationMs;
+        updateDiscoveryActivityClock();
+        return new Promise((resolve, reject) => {
+          const timeout = setTimeout(() => {
+            controller.signal.removeEventListener("abort", abort);
+            discoveryWaitUntil = null;
+            resolve();
+          }, durationMs);
+          const abort = () => {
+            clearTimeout(timeout);
+            controller.signal.removeEventListener("abort", abort);
+            discoveryWaitUntil = null;
+            reject(new DOMException("Search cancelled.", "AbortError"));
+          };
+          if (controller.signal.aborted) {
+            abort();
+            return;
+          }
+          controller.signal.addEventListener("abort", abort, { once: true });
+        });
+      }
       function renderDiscoveryResults(coins, details) {
         const ordered = [...coins].sort((a, b) => (a.rank ?? Number.MAX_SAFE_INTEGER) - (b.rank ?? Number.MAX_SAFE_INTEGER));
         discoveryCoins = ordered;
+        renderDiscoveryActivity({ ...details, matches: ordered.length });
         const shown = ordered.slice(0, details.searching ? 10 : 100);
         const fxRate = overviewPayload?.fx?.status === "ok" ? overviewPayload.fx.usdKrw : null;
         const rows = shown.map((coin) => `<tr><td>${escapeHtml(formatMetric(coin.rank, "rank"))}</td><td>${safeHttpsLink(coin.url, `${coin.name || "이름 확인 불가"} (${coin.symbol || "티커 확인 불가"})`) || escapeHtml(`${coin.name || "이름 확인 불가"} (${coin.symbol || "티커 확인 불가"})`)}</td><td>${escapeHtml(formatDualCurrency(coin.priceUsd, fxRate, "priceUsd"))}</td><td>${escapeHtml(formatDualCurrency(coin.marketCapUsd, fxRate))}</td><td>${escapeHtml(formatDualCurrency(coin.volume24hUsd, fxRate))}</td><td>${escapeHtml(formatMetric(coin.circulatingSupply, "circulatingSupply"))}</td><td>${escapeHtml(formatMetric(coin.totalSupply, "totalSupply"))}</td><td>${escapeHtml(formatMetric(coin.maxSupply, "maxSupply"))}</td><td>${escapeHtml(formatMetric(coin.change24hPct, "change24hPct"))}</td><td>${escapeHtml(formatMetric(coin.change7dPct, "change7dPct"))}</td><td>${escapeHtml(formatMetric(coin.change30dPct, "change30dPct"))}</td><td>${escapeHtml(formatProviderTime(coin.lastUpdated))}</td><td>${escapeHtml(formatMomentum(coin))}</td><td><button class="button" type="button" data-save-discovery-id="${escapeHtml(coin.id)}" ${coin.id ? "" : "disabled"}>후보로 저장</button> <button class="button" type="button" data-discovery-id="${escapeHtml(coin.id)}" data-discovery-symbol="${escapeHtml(coin.symbol)}" ${coin.id ? "" : "disabled"}>시장 자료 조회</button></td></tr>`).join("");
@@ -1449,6 +1566,7 @@
         const startedAt = new Date().toLocaleString("ko-KR");
         const candidates = [];
         let pages = 0;
+        let examined = 0;
         let capCandidates = 0;
         let missing = 0;
         let firstRank = null;
@@ -1459,12 +1577,36 @@
         $("#runFinder").disabled = true;
         $("#cancelFinder").disabled = false;
         const maxRank = maxPages * 250;
+        discoveryStartedAtMs = Date.now();
+        discoveryWaitUntil = null;
+        if (discoveryActivityTimer) clearInterval(discoveryActivityTimer);
+        discoveryActivityTimer = setInterval(updateDiscoveryActivityClock, 1000);
+        renderDiscoveryResults(candidates, {
+          searching: true,
+          phase: "preparing",
+          currentPage: 1,
+          startedAt,
+          lastFetchedAt,
+          pages,
+          examined,
+          maxPages,
+          capCandidates,
+          missing,
+          firstRank,
+          lastRank,
+          capMax,
+          minCap,
+          minVolume
+        });
         try {
           await fetchMarketOverview();
           await ensureDiscoveryFx();
           if (controller.signal.aborted) throw new DOMException("Search cancelled.", "AbortError");
           for (let page = 1; page <= maxPages; page += 1) {
-            $("#discoveryResults").innerHTML = `<div class="status-line discovery-progress">요청 ${page}/${maxPages}페이지 중… 공개 API 제한을 고려해 페이지 사이 약 12초 대기합니다. ${maxPages}페이지 탐색은 최대 약 ${Math.ceil(maxPages * 12 / 60)}분이 걸릴 수 있습니다. 각 페이지의 시장 데이터 시각은 서로 다를 수 있습니다.</div>`;
+            renderDiscoveryResults(candidates, {
+              searching: true, phase: "request", currentPage: page, startedAt, lastFetchedAt, pages,
+              maxPages, examined, capCandidates, missing, firstRank, lastRank, capMax, minCap, minVolume
+            });
             const result = await fetchRankPage(page, controller.signal);
             pages += 1;
             lastFetchedAt = result.fetchedAt ? new Date(result.fetchedAt).toLocaleString("ko-KR") : null;
@@ -1472,6 +1614,7 @@
             if (!Array.isArray(result.coins)) throw new Error(`시총 페이지 ${page} 응답에 종목 목록이 없어 검색을 중단했습니다.`);
             const pageCoins = result.coins;
             pageCoins.forEach((coin) => {
+              examined += 1;
               if (Number.isFinite(coin.rank)) {
                 firstRank = firstRank === null ? coin.rank : Math.min(firstRank, coin.rank);
                 lastRank = lastRank === null ? coin.rank : Math.max(lastRank, coin.rank);
@@ -1489,6 +1632,7 @@
               startedAt,
               lastFetchedAt,
               pages,
+              examined,
               maxPages,
               capCandidates,
               missing,
@@ -1500,22 +1644,11 @@
             });
             if (pageCoins.length < 250) break;
             if (page < maxPages) {
-              await new Promise((resolve, reject) => {
-                if (controller.signal.aborted) {
-                  reject(new DOMException("Search cancelled.", "AbortError"));
-                  return;
-                }
-                const timeout = setTimeout(() => {
-                  controller.signal.removeEventListener("abort", abort);
-                  resolve();
-                }, 12000);
-                const abort = () => {
-                  clearTimeout(timeout);
-                  controller.signal.removeEventListener("abort", abort);
-                  reject(new DOMException("Search cancelled.", "AbortError"));
-                };
-                controller.signal.addEventListener("abort", abort, { once: true });
+              renderDiscoveryResults(candidates, {
+                searching: true, phase: "wait", currentPage: page + 1, startedAt, lastFetchedAt, pages,
+                maxPages, examined, capCandidates, missing, firstRank, lastRank, capMax, minCap, minVolume
               });
+              await waitForDiscoveryScan(controller, 12000);
             }
           }
         } catch (error) {
@@ -1525,6 +1658,7 @@
             errorMessage = readableError(error, "시총 데이터를 조회하지 못했습니다. Vercel 배포 상태와 /api/research API 연결을 확인해 주세요.");
           }
         } finally {
+          discoveryWaitUntil = null;
           discoveryController = null;
           $("#runFinder").disabled = false;
           $("#cancelFinder").disabled = true;
@@ -1537,12 +1671,16 @@
             missing,
             firstRank,
             lastRank,
+            examined,
             error: errorMessage,
             cancelled,
             capMax,
             minCap,
-            minVolume
+            minVolume,
+            phaseProgress: pages / Math.max(1, maxPages) * 90
           });
+          if (discoveryActivityTimer) clearInterval(discoveryActivityTimer);
+          discoveryActivityTimer = null;
         }
         if (!pages && !cancelled && errorMessage) {
           $("#discoveryResults").innerHTML = `<div class="notice">시총 데이터를 가져오지 못해 후보를 만들지 않았습니다: ${escapeHtml(errorMessage)}</div>`;
@@ -1552,8 +1690,105 @@
         }
       }
       let trendCandidates = [];
+      let trendActivityTimer = null;
+      let trendStartedAtMs = null;
+      let trendWaitUntil = null;
+      function updateTrendActivityClock() {
+        const elapsed = trendStartedAtMs === null ? 0 : Math.max(0, Math.floor((Date.now() - trendStartedAtMs) / 1000));
+        const minutes = Math.floor(elapsed / 60);
+        const seconds = elapsed % 60;
+        $("#trendElapsed").textContent = `경과 ${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+        const remaining = trendWaitUntil === null ? 0 : Math.max(0, Math.ceil((trendWaitUntil - Date.now()) / 1000));
+        const countdown = $("#trendWaitCountdown");
+        const detail = $("#trendActivityDetail");
+        if (remaining > 0 && detail.dataset.waitLabel) {
+          countdown.hidden = false;
+          countdown.textContent = `다음 요청까지 ${remaining}초`;
+        } else {
+          countdown.hidden = true;
+          countdown.textContent = "";
+        }
+      }
+      function renderTrendActivity(details) {
+        const root = $("#trendActivity");
+        const title = $("#trendActivityTitle");
+        const detail = $("#trendActivityDetail");
+        const progressBar = $("#trendProgressBar");
+        root.hidden = false;
+        const state = details.searching ? "running" : details.cancelled ? "cancelled" : details.error ? "error" : "done";
+        root.dataset.state = state;
+        detail.dataset.waitLabel = "";
+        let progress = 0;
+        if (details.searching) {
+          if (details.phase === "preparing") {
+            title.textContent = "탐색 시작 · 데이터 연결 준비 중";
+            detail.textContent = "환율과 시장 자료를 확인한 뒤 CoinGecko 순위 조회를 시작합니다.";
+          } else if (details.phase === "rank-wait") {
+            title.textContent = `순위 조회 대기 · 다음 ${details.currentPage}/${details.maxPages}페이지`;
+            detail.dataset.waitLabel = "무료 공개 API 요청 간격을 지키기 위해 대기 중";
+            detail.textContent = detail.dataset.waitLabel;
+          } else if (details.phase === "rank") {
+            title.textContent = `시총 순위 ${details.currentPage}/${details.maxPages}페이지 요청 중`;
+            detail.textContent = `${details.examined}개 자산 확인 · 1차 조건 통과 ${details.prefiltered}개`;
+          } else if (details.phase === "history-wait") {
+            title.textContent = `90일 가격 이력 대기 · ${details.historyIndex}/${details.historyTotal}`;
+            detail.dataset.waitLabel = `${details.assetName || "다음 자산"} 조회 전 API 간격 대기 중`;
+            detail.textContent = detail.dataset.waitLabel;
+          } else if (details.phase === "history") {
+            title.textContent = `90일 가격 이력 ${details.historyIndex}/${details.historyTotal}개 확인 중`;
+            detail.textContent = `${details.assetName || "선정 자산"} · 완료 ${details.checked}개 · 현재 패턴 ${details.matches}개`;
+          } else {
+            title.textContent = "추세 후보 탐색 중";
+            detail.textContent = "자료 응답을 기다리는 중입니다.";
+          }
+          if (details.phase === "rank" || details.phase === "rank-wait") {
+            progress = 5 + (details.pages / Math.max(1, details.maxPages)) * 55;
+          } else if (details.phase === "history" || details.phase === "history-wait") {
+            progress = 60 + (details.checked / Math.max(1, details.historyTotal || 1)) * 40;
+          } else {
+            progress = 2;
+          }
+        } else {
+          title.textContent = details.cancelled ? "탐색이 취소되었습니다" : details.error ? "탐색이 오류로 종료되었습니다" : `탐색 완료 · 패턴 ${details.matches}개`;
+          detail.textContent = details.cancelled
+            ? "완료된 자료만 결과에 남겼습니다."
+            : details.error
+              ? "완료된 응답만 결과에 반영했습니다. 오류 내용을 아래 결과에서 확인하세요."
+              : `순위 ${details.pages}/${details.maxPages}페이지 · 90일 이력 ${details.checked}개 확인`;
+          progress = details.cancelled || details.error
+            ? Math.min(95, details.phaseProgress || 0)
+            : 100;
+        }
+        progress = Math.max(0, Math.min(100, Math.round(progress)));
+        progressBar.style.width = `${progress}%`;
+        progressBar.setAttribute("aria-valuenow", String(progress));
+        updateTrendActivityClock();
+      }
+      function waitForTrendScan(controller, durationMs) {
+        trendWaitUntil = Date.now() + durationMs;
+        updateTrendActivityClock();
+        return new Promise((resolve, reject) => {
+          const timeout = setTimeout(() => {
+            controller.signal.removeEventListener("abort", abort);
+            trendWaitUntil = null;
+            resolve();
+          }, durationMs);
+          const abort = () => {
+            clearTimeout(timeout);
+            controller.signal.removeEventListener("abort", abort);
+            trendWaitUntil = null;
+            reject(new DOMException("Search cancelled.", "AbortError"));
+          };
+          if (controller.signal.aborted) {
+            abort();
+            return;
+          }
+          controller.signal.addEventListener("abort", abort, { once: true });
+        });
+      }
       function renderTrendScanResults(results, details) {
         trendCandidates = results;
+        renderTrendActivity({ ...details, matches: results.length });
         const fxRate = overviewPayload?.fx?.status === "ok" ? overviewPayload.fx.usdKrw : null;
         const rows = results.map((coin, index) => {
           const trend = coin.trend;
@@ -1737,6 +1972,14 @@
         $("#runTrendScan").disabled = true;
         $("#cancelTrendScan").disabled = false;
         $("#runFinder").disabled = true;
+        trendStartedAtMs = Date.now();
+        trendWaitUntil = null;
+        if (trendActivityTimer) clearInterval(trendActivityTimer);
+        trendActivityTimer = setInterval(updateTrendActivityClock, 1000);
+        renderTrendScanResults(matches, {
+          searching: true, phase: "preparing", startedAt, lastFetchedAt, pages, maxPages, maxChecks,
+          examined, prefiltered: screened.size, checked, missing, failures, capMax, minCap, minVolume
+        });
         try {
           await fetchMarketOverview();
           await ensureDiscoveryFx();
@@ -1773,22 +2016,12 @@
             });
             if (result.coins.length < 250) break;
             if (page < maxPages) {
-              await new Promise((resolve, reject) => {
-                if (controller.signal.aborted) {
-                  reject(new DOMException("Search cancelled.", "AbortError"));
-                  return;
-                }
-                const timeout = setTimeout(() => {
-                  controller.signal.removeEventListener("abort", abort);
-                  resolve();
-                }, 12000);
-                const abort = () => {
-                  clearTimeout(timeout);
-                  controller.signal.removeEventListener("abort", abort);
-                  reject(new DOMException("Search cancelled.", "AbortError"));
-                };
-                controller.signal.addEventListener("abort", abort, { once: true });
+              renderTrendScanResults(matches, {
+                searching: true, phase: "rank-wait", currentPage: page + 1, startedAt, lastFetchedAt, pages,
+                maxPages, maxChecks, examined, prefiltered: screened.size, checked, missing, failures,
+                capMax, minCap, minVolume
               });
+              await waitForTrendScan(controller, 12000);
             }
           }
           const sortForReview = (a, b) => Math.abs(a.change30dPct) - Math.abs(b.change30dPct) ||
@@ -1803,26 +2036,18 @@
           for (let index = 0; index < shortlist.length; index += 1) {
             if (controller.signal.aborted) throw new DOMException("Search cancelled.", "AbortError");
             if (index > 0) {
-              await new Promise((resolve, reject) => {
-                if (controller.signal.aborted) {
-                  reject(new DOMException("Search cancelled.", "AbortError"));
-                  return;
-                }
-                const timeout = setTimeout(() => {
-                  controller.signal.removeEventListener("abort", abort);
-                  resolve();
-                }, 12000);
-                const abort = () => {
-                  clearTimeout(timeout);
-                  controller.signal.removeEventListener("abort", abort);
-                  reject(new DOMException("Search cancelled.", "AbortError"));
-                };
-                controller.signal.addEventListener("abort", abort, { once: true });
+              const nextCoin = shortlist[index];
+              renderTrendScanResults(matches, {
+                searching: true, phase: "history-wait", historyIndex: index + 1, historyTotal: shortlist.length,
+                assetName: `${nextCoin.name} (${nextCoin.symbol})`, startedAt, lastFetchedAt, pages, maxPages,
+                maxChecks, examined, prefiltered: screened.size, checked, missing, failures, capMax, minCap, minVolume
               });
+              await waitForTrendScan(controller, 12000);
             }
             const coin = shortlist[index];
             renderTrendScanResults(matches, {
               searching: true, phase: "history", historyIndex: index + 1, historyTotal: shortlist.length,
+              assetName: `${coin.name} (${coin.symbol})`,
               startedAt, lastFetchedAt, pages, maxPages, maxChecks, examined, prefiltered: screened.size,
               checked, missing, failures, capMax, minCap, minVolume
             });
@@ -1836,6 +2061,7 @@
               }
               renderTrendScanResults(matches, {
                 searching: true, phase: "history", historyIndex: index + 1, historyTotal: shortlist.length,
+                assetName: `${coin.name} (${coin.symbol})`,
                 startedAt, lastFetchedAt, pages, maxPages, maxChecks, examined, prefiltered: screened.size,
                 checked, missing, failures, capMax, minCap, minVolume
               });
@@ -1852,6 +2078,7 @@
             errorMessage = error.message || "시장 데이터 조회 실패";
           }
         } finally {
+          trendWaitUntil = null;
           trendScanController = null;
           $("#runTrendScan").disabled = false;
           $("#cancelTrendScan").disabled = true;
@@ -1871,8 +2098,11 @@
             minVolume,
             failures,
             cancelled,
-            error: errorMessage
+            error: errorMessage,
+            phaseProgress: pages ? 5 + (pages / Math.max(1, maxPages)) * 55 + (checked / Math.max(1, maxChecks)) * 40 : 0
           });
+          if (trendActivityTimer) clearInterval(trendActivityTimer);
+          trendActivityTimer = null;
         }
       }
       $("#runFinder").addEventListener("click", runFinder);
