@@ -1,0 +1,1929 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f6f3">
+  <title>Gems Research | 나만의 코인 리서치</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --page: #f4f6f3;
+      --surface: #fff;
+      --ink: #202b25;
+      --muted: #6d7972;
+      --line: #e2e8e3;
+      --green: #167454;
+      --green-soft: #e9f5ef;
+      --amber: #9a641e;
+      --amber-soft: #fff4e4;
+      --red: #a83232;
+      --red-soft: #fff0ef;
+      --shadow: 0 10px 34px rgba(31, 58, 43, .055);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--page); color: var(--ink); font: 15px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif; }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    a { color: var(--green); }
+    .shell { width: min(1120px, 100% - 36px); margin: 0 auto; padding-bottom: 56px; }
+    header { display: flex; align-items: center; justify-content: space-between; min-height: 70px; border-bottom: 1px solid var(--line); }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: -.4px; }
+    .brand-icon { display: grid; width: 34px; height: 34px; place-items: center; border-radius: 11px; background: var(--green); color: white; }
+    .local-note { color: var(--muted); font-size: 12px; }
+    main { padding-top: 27px; }
+    .hero { display: grid; grid-template-columns: 1.4fr .8fr; gap: 18px; align-items: stretch; margin-bottom: 18px; }
+    .hero-copy, .profile-summary, .panel, .source-card { border: 1px solid var(--line); border-radius: 17px; background: var(--surface); box-shadow: var(--shadow); }
+    .hero-copy { padding: 28px; }
+    .eyebrow { margin: 0 0 9px; color: var(--green); font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
+    h1 { margin: 0; font-size: clamp(24px, 4vw, 34px); letter-spacing: -1.2px; line-height: 1.25; }
+    .hero-copy p { max-width: 640px; margin: 11px 0 0; color: var(--muted); }
+    .profile-summary { padding: 21px; }
+    .profile-summary h2 { margin: 0 0 12px; font-size: 15px; }
+    .profile-tags { display: flex; flex-wrap: wrap; gap: 7px; }
+    .tag { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: 999px; padding: 5px 9px; background: #fbfcfb; color: #35443b; font-size: 12px; }
+    .tag.green { border-color: #cde5d7; background: var(--green-soft); color: var(--green); }
+    .tag.amber { border-color: #f0dfc2; background: var(--amber-soft); color: var(--amber); }
+    .tabs { display: flex; gap: 6px; margin: 0 0 16px; overflow-x: auto; }
+    .tab { flex: 0 0 auto; min-height: 40px; padding: 8px 15px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--muted); font-weight: 700; }
+    .tab[aria-selected="true"] { border-color: var(--green); background: var(--green); color: white; }
+    .panel { padding: 22px; }
+    .panel + .panel { margin-top: 14px; }
+    .panel h2 { margin: 0 0 5px; font-size: 19px; letter-spacing: -.4px; }
+    .panel-intro { margin: 0 0 17px; color: var(--muted); font-size: 13px; }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px; }
+    .field { min-width: 0; }
+    .field.full { grid-column: 1 / -1; }
+    label, .label { display: block; margin: 0 0 5px; font-size: 12px; font-weight: 750; }
+    input, select, textarea { width: 100%; min-height: 42px; padding: 10px 11px; border: 1px solid #d5ded7; border-radius: 9px; background: #fff; color: var(--ink); }
+    textarea { min-height: 86px; resize: vertical; }
+    input:focus, select:focus, textarea:focus, button:focus-visible, a:focus-visible { outline: 3px solid #91c8ad; outline-offset: 2px; }
+    .help { display: block; margin-top: 4px; color: var(--muted); font-size: 11px; }
+    .checks { display: flex; flex-wrap: wrap; gap: 7px; }
+    .check-pill { display: inline-flex; align-items: center; gap: 6px; padding: 7px 9px; border: 1px solid var(--line); border-radius: 9px; background: #fbfcfb; font-size: 12px; }
+    .check-pill input { width: 15px; min-height: 15px; margin: 0; accent-color: var(--green); }
+    .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .button { min-height: 40px; padding: 8px 13px; border: 1px solid var(--line); border-radius: 9px; background: white; color: var(--ink); font-weight: 700; }
+    .button:hover { border-color: #a9cbb6; }
+    .button.primary { border-color: var(--green); background: var(--green); color: white; }
+    .button.danger { color: var(--red); }
+    .button:disabled { cursor: not-allowed; opacity: .55; }
+    .notice { margin: 14px 0 0; padding: 12px 14px; border: 1px solid #f0dfc2; border-radius: 11px; background: var(--amber-soft); color: #65491f; font-size: 12px; }
+    .status-line { margin: 0 0 14px; padding: 10px 12px; border-radius: 9px; background: var(--green-soft); color: #245b40; font-size: 12px; }
+    .candidate-list { display: grid; gap: 8px; }
+    .candidate-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px; border: 1px solid var(--line); border-radius: 11px; }
+    .candidate-row button { flex: 0 0 auto; }
+    .candidate-name { font-weight: 800; }
+    .candidate-meta { color: var(--muted); font-size: 12px; }
+    .two-col { display: grid; grid-template-columns: 270px minmax(0, 1fr); gap: 14px; align-items: start; }
+    .criteria { display: grid; gap: 9px; }
+    .criterion { padding: 12px; border: 1px solid var(--line); border-radius: 11px; }
+    .criterion-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px; }
+    .criterion-num { color: var(--green); font-size: 11px; font-weight: 800; }
+    .criterion-title { font-size: 13px; font-weight: 800; }
+    .rating { display: flex; flex-wrap: wrap; gap: 6px; }
+    .rating button { padding: 5px 8px; border: 1px solid var(--line); border-radius: 7px; background: white; color: var(--muted); font-size: 11px; }
+    .rating button[aria-pressed="true"][data-value="good"] { border-color: #8dc4a4; background: var(--green-soft); color: var(--green); }
+    .rating button[aria-pressed="true"][data-value="caution"] { border-color: #e5c487; background: var(--amber-soft); color: var(--amber); }
+    .rating button[aria-pressed="true"][data-value="risk"] { border-color: #e2aaa6; background: var(--red-soft); color: var(--red); }
+    .evidence-fields { display: grid; grid-template-columns: 1.2fr .8fr; gap: 7px; margin-top: 8px; }
+    .evidence-fields input { min-height: 35px; padding: 7px 8px; font-size: 11px; }
+    .metric-strip { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 12px; }
+    .metric { min-width: 105px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: #fbfcfb; }
+    .metric b { display: block; font-size: 17px; }
+    .metric span { color: var(--muted); font-size: 10px; }
+    .draft { min-height: 250px; font: 12px/1.6 ui-monospace, SFMono-Regular, Consolas, monospace; }
+    .sources { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; }
+    .source-card { display: block; padding: 13px; color: var(--ink); text-decoration: none; }
+    .source-card b { display: block; margin-bottom: 3px; font-size: 13px; }
+    .source-card span { color: var(--muted); font-size: 11px; }
+    .data-results { display: grid; gap: 10px; margin-top: 14px; }
+    .data-source { padding: 13px; border: 1px solid var(--line); border-radius: 11px; background: #fbfcfb; }
+    .data-source h3 { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 0 0 8px; font-size: 14px; }
+    .data-points { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; }
+    .data-point { padding: 8px; border-radius: 8px; background: white; }
+    .data-point b { display: block; overflow-wrap: anywhere; font-size: 13px; }
+    .data-point span { color: var(--muted); font-size: 10px; }
+    .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
+    .rank-table { width: 100%; border-collapse: collapse; background: white; font-size: 12px; white-space: nowrap; }
+    .rank-table th, .rank-table td { padding: 8px 9px; border-bottom: 1px solid var(--line); text-align: right; }
+    .rank-table th { position: sticky; top: 0; background: #f7faf8; color: var(--muted); font-size: 10px; }
+    .rank-table th:nth-child(2), .rank-table td:nth-child(2) { text-align: left; }
+    .rank-table tr:last-child td { border-bottom: 0; }
+    .rank-table a { font-weight: 700; text-decoration: none; }
+    .red-team { border-color: #efcf9e; background: #fffaf1; }
+    .red-team ul { margin: 7px 0 0; padding-left: 20px; }
+    .trend-status { margin: 0 0 9px; padding: 9px 11px; border-radius: 8px; background: var(--amber-soft); color: #65491f; font-weight: 750; }
+    .trend-status.positive { background: var(--green-soft); color: var(--green); }
+    .discovery-progress { margin-top: 12px; }
+    .data-note { margin: 8px 0 0; color: var(--muted); font-size: 11px; }
+    .status-badge { border-radius: 999px; padding: 3px 7px; background: var(--green-soft); color: var(--green); font-size: 10px; }
+    .status-badge.unavailable, .status-badge.not_configured { background: var(--amber-soft); color: var(--amber); }
+    .tv-frame { width: 100%; min-height: 490px; border: 1px solid var(--line); border-radius: 11px; background: white; }
+    .empty { padding: 20px; border: 1px dashed #cdd8d0; border-radius: 10px; color: var(--muted); text-align: center; font-size: 13px; }
+    .small-note { color: var(--muted); font-size: 11px; }
+    .footer { margin: 22px 0 0; color: var(--muted); font-size: 11px; }
+    [hidden] { display: none !important; }
+    @media (max-width: 760px) {
+      .shell { width: min(100% - 22px, 640px); }
+      .hero { grid-template-columns: 1fr; }
+      .two-col { grid-template-columns: 1fr; }
+      .sources { grid-template-columns: repeat(2, 1fr); }
+      .panel { padding: 17px; }
+    }
+    @media (max-width: 480px) {
+      .grid { grid-template-columns: 1fr; }
+      .field.full { grid-column: auto; }
+      .evidence-fields { grid-template-columns: 1fr; }
+      .sources { grid-template-columns: 1fr; }
+      .data-points { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .tv-frame { min-height: 380px; }
+      .hero-copy { padding: 21px; }
+      .candidate-row { align-items: flex-start; flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div class="brand"><span class="brand-icon">✦</span><span>GEMS <span style="color:var(--green)">/</span> RESEARCH</span></div>
+      <div class="local-note"><span id="connectionStatus" role="status">시세 API 연결 상태 확인 중</span><br>● 이 브라우저에만 저장</div>
+    </header>
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">나에게 맞춘 리서치 워크벤치</p>
+          <h1 id="greeting">근거를 먼저 확인하고,<br>내 기준으로 후보를 좁혀요.</h1>
+            <p>관심 스타일과 위험 허용도는 직접 조정할 수 있어요. 정보가 없으면 빈칸으로 두고, 확인되지 않은 숫자나 주소는 만들지 않습니다. 미래에 반드시 쓰일 코인이나 수익을 보장할 수는 없습니다.</p>
+          <div class="actions"><button class="button primary" type="button" data-go="discover">종목 없이 후보 찾기</button></div>
+        </div>
+        <aside class="profile-summary" aria-live="polite">
+          <h2>현재 리서치 기준 <button class="button" type="button" data-go="profile" style="float:right;min-height:30px;padding:4px 9px;font-size:11px">수정</button></h2>
+          <div class="profile-tags" id="profileTags"></div>
+          <p class="small-note" id="riskNote" style="margin:12px 0 0"></p>
+        </aside>
+      </section>
+
+      <nav class="tabs" role="tablist" aria-label="리서치 메뉴">
+        <button class="tab" type="button" role="tab" id="tab-profile" aria-selected="true" aria-controls="panel-profile" data-tab="profile">내 기준</button>
+        <button class="tab" type="button" role="tab" id="tab-discover" aria-selected="false" aria-controls="panel-discover" data-tab="discover">후보 찾기</button>
+        <button class="tab" type="button" role="tab" id="tab-trend" aria-selected="false" aria-controls="panel-trend" data-tab="trend">조정 후 추세전환 후보</button>
+        <button class="tab" type="button" role="tab" id="tab-market" aria-selected="false" aria-controls="panel-market" data-tab="market">시장·온체인 데이터</button>
+        <button class="tab" type="button" role="tab" id="tab-review" aria-selected="false" aria-controls="panel-review" data-tab="review">12대 검증</button>
+        <button class="tab" type="button" role="tab" id="tab-saved" aria-selected="false" aria-controls="panel-saved" data-tab="saved">내 후보</button>
+      </nav>
+
+      <section class="panel" id="panel-profile" role="tabpanel" aria-labelledby="tab-profile">
+        <h2>내 투자·리서치 성향</h2>
+        <p class="panel-intro">첨부 자료에서 확인한 기준을 초안으로 넣었습니다. 추측한 성향은 기본값으로 확정하지 않았으니 직접 맞춰 주세요.</p>
+        <div class="status-line">초안: 작은 시가총액에서 비대칭 성장 기회를 찾되, 실제 수익·토큰 가치 환원·언락·보안을 근거로 확인하는 스타일</div>
+        <form id="profileForm">
+          <div class="grid">
+            <div class="field">
+              <label for="goal">가장 중요한 목표</label>
+              <select id="goal">
+                <option value="asymmetric">작은 자본으로 큰 상방을 노리는 초기 발굴</option>
+                <option value="compounder">검증된 경제활동과 장기 복리</option>
+                <option value="income">토큰 환매·수수료 등 가치 환원 중심</option>
+                <option value="custom">직접 입력한 목표</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="experience">크립토 분석 경험</label>
+              <select id="experience">
+                <option value="unknown">아직 알려주지 않음</option>
+                <option value="beginner">초보 — 쉬운 설명이 좋아요</option>
+                <option value="intermediate">중급 — 지표와 링크 중심</option>
+                <option value="advanced">숙련 — 온체인·토큰 구조까지</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="capMax">관심 시가총액 상한 (USD)</label>
+              <input id="capMax" type="number" min="0" step="1000000" inputmode="numeric">
+              <span class="help">자료의 12대 필터 요청에서 확인한 기본값: $100M</span>
+            </div>
+            <div class="field">
+              <label for="buybackMin">최소 환매/소각 비율 (%)</label>
+              <input id="buybackMin" type="number" min="0" max="100" step="1" inputmode="numeric">
+              <span class="help">자료의 스캔 조건에서 확인한 기본값: 프로토콜 수수료의 35%</span>
+            </div>
+            <div class="field">
+              <label for="risk">위험 감수 성향</label>
+              <select id="risk">
+                <option value="unknown">미확인 — 임의로 추정하지 않음</option>
+                <option value="low">낮음 — 큰 변동과 공급 위험을 피하고 싶음</option>
+                <option value="medium">중간 — 높은 변동은 일부 감수</option>
+                <option value="high">높음 — 초기·고변동 후보도 검토</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="horizon">투자 관찰 기간</label>
+              <select id="horizon">
+                <option value="unknown">미확인</option>
+                <option value="short">단기 — 3개월 이내</option>
+                <option value="medium">중기 — 3~12개월</option>
+                <option value="long">장기 — 1년 이상</option>
+              </select>
+            </div>
+            <div class="field full">
+              <span class="label">관심 체인</span>
+              <div class="checks" id="chainOptions">
+                <label class="check-pill"><input type="checkbox" value="Base"> Base</label>
+                <label class="check-pill"><input type="checkbox" value="Solana"> Solana</label>
+                <label class="check-pill"><input type="checkbox" value="Ethereum L2"> Ethereum L2</label>
+                <label class="check-pill"><input type="checkbox" value="Ethereum"> Ethereum</label>
+                <label class="check-pill"><input type="checkbox" value="무관"> 체인 무관</label>
+              </div>
+            </div>
+            <div class="field full">
+              <label for="customGoal">내가 특히 원하는 것 / 싫어하는 것</label>
+              <textarea id="customGoal" placeholder="예: 바이백이 실제 온체인에서 실행되는지 우선 확인. VC 물량과 잠금 해제 위험이 큰 종목은 제외."></textarea>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="button primary" type="submit">내 기준 저장</button>
+            <button class="button" type="button" id="resetProfile">자료에서 읽은 초안으로 되돌리기</button>
+          </div>
+        </form>
+        <p class="notice">개인정보와 관심 목록은 이 브라우저의 localStorage에만 저장됩니다. 다른 기기와 동기화되지 않습니다. 투자금·지갑 주소·API 비밀키는 입력하지 마세요.</p>
+      </section>
+
+      <section class="panel" id="panel-discover" role="tabpanel" aria-labelledby="tab-discover" hidden>
+        <h2>종목 없이 후보 찾기</h2>
+        <p class="panel-intro">티커를 미리 정하지 않아도 됩니다. 저장한 시총 상한과 선택한 탐색 범위 안에서 CoinGecko 시총 순위 데이터를 직접 조회하고, 원자료 기준 후보를 추립니다. 이 전역 순위 API에는 신뢰할 수 있는 체인 분류가 없어 관심 체인 조건을 적용하지 않습니다. 후보의 체인·공식 컨트랙트는 다음 단계에서 별도로 확인해야 합니다.</p>
+        <p class="notice">이번 탐색에서 실제 적용되는 기준은 저장된 시총 상한과 아래에서 입력한 최소 시총·거래량뿐입니다. 관심 체인, 위험 성향, 관찰 기간, 환매 비율, 목표는 후보 필터에 적용되지 않습니다. 결과는 개인화 투자 추천이 아닙니다.</p>
+        <article class="data-source">
+          <h3>CoinGecko 순위 기준 후보 파인더 — 시장 데이터 1차 선별</h3>
+          <p class="data-note">필터는 현재 페이지에 실제 반환된 시총·24시간 거래량만 사용합니다. 빈 필터는 제한 없음이며 값을 추정해 채우지 않습니다. 결과는 검토 대기 목록이지 추천·매수 신호가 아닙니다.</p>
+          <div class="grid" style="margin-top:10px">
+            <div class="field">
+              <label for="discoveryPages">검색 깊이 (시총 페이지 수)</label>
+              <select id="discoveryPages"><option value="4">최대 4페이지 (1,000개)</option><option value="8">최대 8페이지 (2,000개)</option><option value="12" selected>최대 12페이지 (3,000개)</option><option value="20">최대 20페이지 (5,000개)</option><option value="40">최대 40페이지 (10,000개)</option><option value="100">최대 100페이지 (25,000개)</option></select>
+              <span class="help">공개 API 호출을 고려해 페이지 사이 약 12초 대기합니다. 12페이지는 약 2분, 100페이지는 약 20분까지 걸릴 수 있습니다. 전체 목록은 보장되지 않습니다.</span>
+            </div>
+            <div class="field">
+              <label for="discoveryMinCap">최소 시가총액 (선택, USD)</label>
+              <input id="discoveryMinCap" type="number" min="0" step="100000" placeholder="빈칸 = 최소 제한 없음">
+            </div>
+            <div class="field">
+              <label for="discoveryMinVolume">최소 24시간 거래량 (선택, USD)</label>
+              <input id="discoveryMinVolume" type="number" min="0" step="10000" placeholder="빈칸 = 최소 제한 없음">
+            </div>
+            <div class="field">
+              <span class="label">저장된 시총 상한</span>
+              <div class="status-line" id="discoveryCap">내 기준을 읽는 중…</div>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="button primary" type="button" id="runFinder">후보 자동 탐색</button>
+            <button class="button danger" type="button" id="cancelFinder" disabled>탐색 취소</button>
+          </div>
+          <div class="data-results" id="discoveryResults" aria-live="polite"><div class="empty">후보 자동 탐색을 누르면 실제 시총 페이지를 순차 조회합니다. 종목명을 만들어내거나 빈 데이터를 채우지 않습니다.</div></div>
+        </article>
+        <h2 style="margin-top:22px">개인화 조사 요청문 만들기</h2>
+        <p class="panel-intro">이 기능은 요청문 텍스트만 생성하며 AI에 보내거나 답변을 자동 생성하지 않습니다.</p>
+        <div class="grid">
+          <div class="field">
+            <label for="theme">우선 조사할 테마 (선택)</label>
+            <input id="theme" placeholder="예: 온체인 대출, RWA, AI 에이전트">
+          </div>
+          <div class="field">
+            <label for="count">후보 수</label>
+            <select id="count"><option>2</option><option selected>3</option><option>5</option></select>
+          </div>
+          <div class="field full">
+            <label for="exclusions">제외할 티커·프로젝트 (선택)</label>
+            <input id="exclusions" placeholder="예: 이미 보유한 종목, 조사 완료한 종목">
+          </div>
+        </div>
+        <div class="actions">
+          <button class="button primary" type="button" id="buildPrompt">개인화 조사 요청문 만들기</button>
+          <button class="button" type="button" id="copyPrompt">요청문 복사</button>
+          <button class="button" type="button" id="openClaude">Claude에서 열기</button>
+        </div>
+        <div class="field" style="margin-top:12px">
+          <label for="promptOutput">조사 요청문 — 내용 확인 후 복사해 사용하세요</label>
+          <textarea id="promptOutput" class="draft" placeholder="버튼을 눌러 내 기준과 근거 규칙이 반영된 질문을 만드세요."></textarea>
+        </div>
+        <p class="notice">실시간 후보 파인더와 가격·DEX 조회는 Vercel 배포 후 작동합니다. 요청문 생성은 AI 분석 호출이 아닙니다. 빈 항목은 임의로 채워지지 않으며, 실제 응답에서 값이 빠졌으면 확인 불가로 표시합니다.</p>
+      </section>
+
+      <section class="panel" id="panel-trend" role="tabpanel" aria-labelledby="tab-trend" hidden>
+        <h2>조정 후 상승 전환 초입 후보</h2>
+        <p class="panel-intro">CoinGecko 시총 순위로 범위를 먼저 좁힌 뒤, 최대 12개 자산의 90일 일별 가격을 순차 확인합니다. 조정폭, 7일 반등, 7일 저점 높임, 20일 이동평균을 함께 확인해 ‘초입 후보’와 ‘회복 관찰’을 분리합니다. 이는 설명 가능한 규칙 기반 스크리너이지 AI 자율 판단, 매수 신호, 상승 보장이 아닙니다.</p>
+        <p class="notice">검색 범위는 CoinGecko 순위 페이지에 한정되며 전체 코인을 훑지 않습니다. 무료 API 한도 보호를 위해 심층 가격 이력은 종목당 하나씩 약 12초 간격으로 조회합니다. 예상 시간: 순위 페이지마다 약 12초 + 심층 확인 대상마다 약 12초. 긴 탐색은 수 분 이상 걸릴 수 있습니다.</p>
+        <article class="data-source">
+          <h3>조정·반등 조건으로 후보 탐색</h3>
+          <div class="grid" style="margin-top:10px">
+            <div class="field">
+              <label for="trendPages">시총 순위 탐색 깊이</label>
+              <select id="trendPages"><option value="1">최대 1페이지 (250개)</option><option value="2">최대 2페이지 (500개)</option><option value="4" selected>최대 4페이지 (1,000개)</option><option value="8">최대 8페이지 (2,000개)</option><option value="12">최대 12페이지 (3,000개)</option></select>
+              <span class="help">순위 API 페이지 사이 약 12초 대기. 순위가 없는 자산은 검색되지 않습니다.</span>
+            </div>
+            <div class="field">
+              <label for="trendChecks">90일 가격 이력 심층 확인 수</label>
+              <select id="trendChecks"><option value="5">최대 5개</option><option value="8" selected>최대 8개</option><option value="12">최대 12개</option></select>
+              <span class="help">1차 조건 후보 중 일부만 확인합니다. 우선순위는 30일 변화율이 0%에 가까운 순입니다.</span>
+            </div>
+            <div class="field">
+              <label for="trendMinCap">최소 시가총액 (선택, USD)</label>
+              <input id="trendMinCap" type="number" min="0" step="100000" placeholder="빈칸 = 최소 제한 없음">
+            </div>
+            <div class="field">
+              <label for="trendMinVolume">최소 24시간 거래량 (선택, USD)</label>
+              <input id="trendMinVolume" type="number" min="0" step="10000" placeholder="빈칸 = 최소 제한 없음">
+            </div>
+          </div>
+          <div class="actions">
+            <button class="button primary" type="button" id="runTrendScan">추세전환 후보 찾기</button>
+            <button class="button danger" type="button" id="cancelTrendScan" disabled>탐색 취소</button>
+          </div>
+          <div class="data-results" id="trendResults" aria-live="polite"><div class="empty">탐색을 시작하면 설정한 순위 범위에서 실제 시세 이력을 확인합니다. 근거가 충분하지 않거나 API가 실패하면 후보를 만들어내지 않습니다.</div></div>
+        </article>
+      </section>
+
+      <section class="panel" id="panel-market" role="tabpanel" aria-labelledby="tab-market" hidden>
+        <h2>시장·DEX 데이터 조회</h2>
+        <p class="panel-intro">CoinGecko 제공 시총 순위·전체 암호자산 시총 요약·가격 모멘텀·DEX 유동성을 확인합니다. “실시간”은 API 요청 시점의 제공자 응답을 뜻하며 거래소 틱·체결 실시간 또는 최신성 보장은 아닙니다. 각 원자료 시각과 환율 갱신 시각을 구분합니다. 높은 사용량이나 TVL은 미래에 반드시 채택된다는 증거가 아닙니다.</p>
+        <article class="data-source" id="personalApiKeyPanel">
+          <h3>내 API 키 설정 (선택)</h3>
+          <p class="notice"><b>보안 안내 — 입력 전에 확인하세요.</b> 키는 이 페이지 메모리에만 임시 보관하고 브라우저 저장소에는 저장하지 않습니다. 하지만 키를 사용하면 HTTPS를 통해 이 앱의 Vercel 서버로 전송되고, 서버가 제공자 API에 전달합니다. 앱 운영 서버는 처리 중 키를 받을 수 있으므로, 운영자와 배포 환경을 신뢰할 수 없는 사이트에서는 입력하지 마세요. 탭을 닫거나 15분간 사용하지 않으면 앱에서 키를 지웁니다. 이는 노출 위험을 줄이는 조치이지 완전한 삭제·비노출 보증이 아닙니다. API 제공자 계정의 사용량·요금은 키 소유자에게 적용됩니다. 지갑 개인키나 시드 문구는 절대 입력하지 마세요.</p>
+          <p class="data-note">현재 키 연동 범위는 CoinMarketCap의 개별 시세·시총·공급량과 CoinGlass의 지원되는 파생상품 시장 데이터입니다. 키만으로 언락, 홀더 집중도, 온체인 가치 환원 또는 AI 심층 분석이 자동 추가되지는 않습니다.</p>
+          <p class="small-note" id="personalKeyAvailability" role="status">HTTPS 배포 페이지에서 사용할 수 있습니다.</p>
+          <label class="check-pill"><input type="checkbox" id="personalKeyConsent"> 안내를 읽었고, 이 서버가 키를 처리하는 것에 동의합니다.</label>
+          <div id="personalKeyFields" hidden>
+            <div class="grid" style="margin-top:10px">
+              <div class="field"><label for="personalCmcKey">내 CoinMarketCap API 키</label><input id="personalCmcKey" type="password" autocomplete="new-password" spellcheck="false" placeholder="사용 중 메모리에만 유지"></div>
+              <div class="field"><label for="personalCoinglassKey">내 CoinGlass API 키</label><input id="personalCoinglassKey" type="password" autocomplete="new-password" spellcheck="false" placeholder="사용 중 메모리에만 유지"></div>
+            </div>
+            <p class="small-note" id="personalKeyStatus" role="status">키가 입력되지 않았습니다. 사용이 끝나면 키 지우기를 누르세요.</p>
+            <button class="button danger" type="button" id="clearPersonalKeys">내 키 지우기</button>
+          </div>
+        </article>
+        <article class="data-source">
+          <h3>전체 암호자산 시장 규모와 환율</h3>
+          <p class="data-note">USD와 CoinGecko 원자료 KRW 값을 나란히 표시합니다. USD/KRW 환산 시세는 환율 API 기준이며, 실제 거래소 환전·송금 환율이 아닙니다. 데이터가 연결되지 않으면 한화 값을 추정하지 않습니다.</p>
+          <div class="data-results" id="marketOverview" aria-live="polite"><div class="empty">Vercel API에서 시장 요약을 불러와야 실시간에 가까운 원자료 상태를 확인할 수 있습니다.</div></div>
+          <div class="actions"><button class="button" type="button" id="refreshOverview">시장·환율 새로고침</button></div>
+        </article>
+        <article class="data-source">
+          <h3>암호자산 전체 시총 순위 — CoinGecko 페이지 조회</h3>
+          <p class="data-note">순위는 페이지당 최대 250개이며 제공자 범위 내 자료입니다. 시총·거래량은 USD/KRW, 공급량은 토큰 수량으로 표시합니다. CoinGecko가 분류를 제공하지 않는 분야·네트워크는 확인 불가로 표시합니다. 순위 없는 자산·제공자 범위 밖 자산을 포함한 전체 목록은 아닙니다.</p>
+          <div class="grid" style="margin-top:10px">
+            <div class="field"><label for="rankPage">순위 페이지 (페이지당 최대 250종목)</label><input id="rankPage" type="number" min="1" max="100" step="1" value="1"></div>
+            <div class="field"><label for="rankFilter">현재 페이지에서 이름·티커 찾기</label><input id="rankFilter" placeholder="예: ETH, Ethereum" autocomplete="off"></div>
+          </div>
+          <div class="actions">
+            <button class="button primary" type="button" id="fetchRanking">시총 순위 불러오기</button>
+            <button class="button" type="button" id="previousRankPage" disabled>이전 250개</button>
+            <button class="button" type="button" id="nextRankPage" disabled>다음 250개</button>
+          </div>
+          <div class="data-results" id="rankResults" aria-live="polite"><div class="empty">페이지 1을 불러오면 CoinGecko 시총 순위와 24시간·7일·30일 변동을 표시합니다.</div></div>
+        </article>
+        <div class="grid">
+          <div class="field"><label for="liveSymbol">티커</label><input id="liveSymbol" placeholder="예: ETH" maxlength="16" autocomplete="off"></div>
+          <div class="field"><label for="liveChain">체인 (DEX 결과 필터)</label><select id="liveChain"><option value="">체인 무관</option><option value="ethereum">Ethereum</option><option value="base">Base</option><option value="solana">Solana</option><option value="arbitrum">Arbitrum</option><option value="optimism">Optimism</option><option value="polygon">Polygon</option><option value="bsc">BNB Chain</option><option value="avalanche">Avalanche</option></select></div>
+          <div class="field full"><label for="liveAddress">토큰 컨트랙트 주소 (DEX/GeckoTerminal 직접 조회에 권장)</label><input id="liveAddress" placeholder="체인과 주소를 알면 티커 검색 대신 주소를 사용하세요" autocomplete="off"></div>
+          <div class="field"><label for="liveGecko">CoinGecko coin ID (선택)</label><input id="liveGecko" placeholder="예: ethereum, aave"></div>
+          <div class="field"><label for="liveProtocol">DefiLlama protocol slug (선택)</label><input id="liveProtocol" placeholder="예: aave, maple"></div>
+          <div class="field"><label for="liveCmc">CoinMarketCap ID (선택; API 키 필요)</label><input id="liveCmc" inputmode="numeric" placeholder="검증한 숫자 ID"></div>
+          <div class="field"><label for="liveTvSymbol">TradingView 거래소 심볼</label><input id="liveTvSymbol" placeholder="예: BINANCE:ETHUSDT"></div>
+        </div>
+        <div class="actions">
+          <button class="button primary" type="button" id="fetchMarket">공개 데이터 조회</button>
+          <button class="button" type="button" id="showChart">TradingView 차트 열기</button>
+        </div>
+        <div class="data-results" id="liveResults" aria-live="polite"><div class="empty">티커나 체인·컨트랙트 주소를 입력한 뒤 조회하세요.</div></div>
+        <article class="data-source red-team" id="redTeamResults" aria-live="polite" hidden></article>
+        <div class="field" style="margin-top:18px">
+          <label for="tradingViewFrame">TradingView 공개 차트 위젯 <span class="small-note">실시간 시세 API와는 별개이며, 심볼이 해당 거래소에 상장돼 있어야 합니다.</span></label>
+          <iframe id="tradingViewFrame" class="tv-frame" title="TradingView 차트" loading="lazy" hidden referrerpolicy="strict-origin-when-cross-origin"></iframe>
+        </div>
+        <p class="notice"><b>무료·유료 경계:</b> DEX Screener·DefiLlama·CoinGecko 공개 조회는 제한과 이용조건이 있습니다. CoinMarketCap·CoinGlass는 본인 키를 위에 입력하거나 Vercel 서버 환경변수에 배포자가 등록해야 합니다. TradingView는 차트 임베드이며 과거 캔들 API나 자동 매매 신호를 제공하지 않습니다.</p>
+        <p class="small-note">Vercel Functions가 없는 file:// 직접 열기 환경에서는 <code>/api/research</code>가 실행되지 않습니다. GitHub에 <code>GemsResearch</code> 폴더를 올리고 이 폴더를 Vercel 프로젝트 루트로 선택해야 합니다.</p>
+      </section>
+
+      <section class="panel" id="panel-review" role="tabpanel" aria-labelledby="tab-review" hidden>
+        <div class="two-col">
+          <div>
+            <h2>검토할 후보</h2>
+            <p class="panel-intro">먼저 프로젝트와 토큰을 구분해 등록하세요.</p>
+            <div class="field"><label for="candidateName">프로젝트명</label><input id="candidateName" placeholder="예: Example Protocol"></div>
+            <div class="field" style="margin-top:9px"><label for="ticker">티커</label><input id="ticker" placeholder="예: ABC"></div>
+            <div class="field" style="margin-top:9px"><label for="chain">체인</label><input id="chain" placeholder="예: Base"></div>
+            <div class="field" style="margin-top:9px"><label for="candidateGeckoId">CoinGecko coin ID (선택)</label><input id="candidateGeckoId" placeholder="예: ethereum, aave"></div>
+            <div class="field" style="margin-top:9px"><label for="contract">토큰 컨트랙트 주소</label><input id="contract" placeholder="공식 자료에서 확인한 경우만 입력"></div>
+            <div class="field" style="margin-top:9px"><label for="migration">토큰 마이그레이션 상태</label><select id="migration"><option value="unknown">미확인</option><option value="no">확인 — 마이그레이션 없음</option><option value="yes">확인 — 마이그레이션 있음</option></select></div>
+            <div class="field" style="margin-top:9px"><label for="identitySource">주소·토큰 신원을 확인한 공식 출처 URL</label><input id="identitySource" type="url" placeholder="https://..."></div>
+            <div class="field" style="margin-top:9px"><label for="tradePath">공식 거래 경로 URL (선택)</label><input id="tradePath" type="url" placeholder="확인된 개별 거래 화면 또는 거래소 현물 페이지"></div>
+            <div class="actions">
+              <button class="button primary" type="button" id="newCandidate">새 후보 등록</button>
+              <button class="button" type="button" id="saveCandidate">검토 내용 저장</button>
+            </div>
+            <p class="notice">티커만으로 토큰 신원을 확정하지 않습니다. 체인·컨트랙트·최신 마이그레이션 주소를 공식 자료로 확인하기 전에는 후보 상태를 보류하세요.</p>
+          </div>
+          <div>
+            <h2>12대 근거 점검</h2>
+            <p class="panel-intro">상태는 매수 신호가 아니라 근거 검토 상태입니다. 수치·날짜·주소는 출처와 기준 시각을 함께 남기세요.</p>
+            <div class="metric-strip" id="reviewMetrics"></div>
+            <div class="data-source" id="candidateSnapshot" hidden></div>
+            <div class="criteria" id="criteria"></div>
+            <p class="notice" id="reviewNotice" aria-live="polite" hidden></p>
+            <div class="actions">
+              <button class="button" type="button" id="buildCandidatePrompt">이 후보의 검증 질문 만들기</button>
+              <button class="button" type="button" id="reviewCandidateMarket">저장된 CoinGecko ID로 시장 자료 확인</button>
+              <button class="button danger" type="button" id="deleteCandidate">이 후보 삭제</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="panel-saved" role="tabpanel" aria-labelledby="tab-saved" hidden>
+        <h2>내 후보 목록</h2>
+        <p class="panel-intro">이 목록은 기기 안에만 저장됩니다. 등급이나 자동 매수·매도 추천은 표시하지 않습니다.</p>
+        <div class="candidate-list" id="candidateList"></div>
+        <div class="actions">
+          <button class="button" type="button" id="exportData">내 데이터 내보내기</button>
+          <label class="button" for="importData" style="display:inline-flex;align-items:center">백업 불러오기</label>
+          <input id="importData" type="file" accept="application/json,.json" hidden>
+          <button class="button danger" type="button" id="clearData">모든 로컬 데이터 삭제</button>
+        </div>
+        <p class="small-note">백업 파일을 안전하게 보관하세요. 가져오기는 이 앱의 JSON 백업 형식만 지원합니다.</p>
+      </section>
+
+      <section class="panel" aria-labelledby="sourcesHeading">
+        <h2 id="sourcesHeading">직접 확인할 데이터 출처</h2>
+        <p class="panel-intro">아래는 자료 제공자의 기본 페이지입니다. 개별 토큰 주소를 자동 생성하지 않으며, 개별 자산 페이지는 검색·확인 후 기록하세요.</p>
+        <div class="sources">
+          <a class="source-card" href="https://www.coingecko.com/" target="_blank" rel="noopener noreferrer"><b>CoinGecko</b><span>가격·시총·공급량 대조</span></a>
+          <a class="source-card" href="https://coinmarketcap.com/" target="_blank" rel="noopener noreferrer"><b>CoinMarketCap</b><span>시총·유동성 교차 확인</span></a>
+          <a class="source-card" href="https://defillama.com/" target="_blank" rel="noopener noreferrer"><b>DefiLlama</b><span>TVL·수수료·프로토콜 지표</span></a>
+          <a class="source-card" href="https://etherscan.io/" target="_blank" rel="noopener noreferrer"><b>Etherscan</b><span>Ethereum 컨트랙트·보유자</span></a>
+          <a class="source-card" href="https://basescan.org/" target="_blank" rel="noopener noreferrer"><b>BaseScan</b><span>Base 컨트랙트·보유자</span></a>
+          <a class="source-card" href="https://solscan.io/" target="_blank" rel="noopener noreferrer"><b>Solscan</b><span>Solana 토큰·계정 정보</span></a>
+        </div>
+      </section>
+
+      <p class="footer">이 도구는 개인 리서치 기록장입니다. 점수·근거 표시는 수익 예측이나 투자 권유가 아닙니다. 암호자산은 원금 손실 위험이 크며, 출처·수치·컨트랙트·언락을 직접 재확인하세요.</p>
+    </main>
+  </div>
+  <script>
+    "use strict";
+    const STORAGE_KEY = "gems-research-v1";
+    const CRITERIA = [
+      "바이백·소각 및 토큰 가치 환원",
+      "유통량·FDV·언락·희석",
+      "토큰 사용 필요성과 권리",
+      "실제 섹터 수요와 성장",
+      "기술·네트워크·유동성 해자",
+      "시가총액·가치평가·손익비",
+      "고래·내부자 보유와 집중도",
+      "사용자·커뮤니티 지속성",
+      "파트너·백커·유통 경로",
+      "온체인 실사용·수수료",
+      "거래량·시장 유동성",
+      "컨트랙트 권한·감사·보안"
+    ];
+    const DATA_LABELS = {
+      priceUsd: "가격 (USD)",
+      priceKrw: "가격 (KRW, 원자료)",
+      marketCapUsd: "시가총액",
+      marketCapKrw: "시가총액 (KRW, 원자료)",
+      marketCapRank: "CoinGecko 시총 순위",
+      fdvUsd: "FDV",
+      fdvKrw: "FDV (KRW, 원자료)",
+      volume24hUsd: "24시간 거래량",
+      volume24hKrw: "24시간 거래량 (KRW, 원자료)",
+      liquidityUsd: "DEX 유동성",
+      totalFees24hUsd: "24시간 프로토콜 수수료",
+      totalFees7dUsd: "7일 프로토콜 수수료",
+      totalFees30dUsd: "30일 프로토콜 수수료",
+      circulatingSupply: "유통량",
+      totalSupply: "총공급량",
+      maxSupply: "최대공급량",
+      categories: "CoinGecko 분야 분류",
+      marketNetworks: "CoinGecko 토큰 네트워크",
+      assetPlatformId: "CoinGecko 기반 플랫폼",
+      tvlUsd: "DefiLlama TVL",
+      open_interest_usd: "미결제약정 (USD)",
+      avg_funding_rate_by_oi: "OI 가중 펀딩비",
+      long_short_ratio_24h: "24시간 롱/숏 비율",
+      liquidation_usd_24h: "24시간 청산액 (USD)",
+      is_open_source: "소스 공개 여부 (원자료)",
+      is_proxy: "프록시 여부 (원자료)",
+      is_mintable: "추가 발행 플래그 (원자료)",
+      can_take_back_ownership: "소유권 회수 플래그 (원자료)",
+      owner_change_balance: "관리자 잔액 변경 플래그 (원자료)",
+      hidden_owner: "숨은 소유자 플래그 (원자료)",
+      selfdestruct: "자체 파괴 플래그 (원자료)",
+      external_call: "외부 호출 플래그 (원자료)",
+      is_honeypot: "허니팟 탐지 (원자료)",
+      is_blacklisted: "블랙리스트 기능 플래그 (원자료)",
+      is_whitelisted: "화이트리스트 기능 플래그 (원자료)",
+      cannot_sell_all: "매도 제한 플래그 (원자료)",
+      slippage_modifiable: "슬리피지 변경 플래그 (원자료)",
+      transfer_pausable: "전송 중지 기능 플래그 (원자료)",
+      trading_cooldown: "거래 대기 기능 플래그 (원자료)",
+      is_anti_whale: "고래 제한 플래그 (원자료)",
+      anti_whale_modifiable: "고래 제한 변경 플래그 (원자료)",
+      buy_tax: "매수세 (제공자 추정)",
+      sell_tax: "매도세 (제공자 추정)",
+      holder_count: "보유자 수 (제공자 데이터)"
+    };
+    const DEFAULT_PROFILE = {
+      goal: "asymmetric",
+      experience: "unknown",
+      capMax: 100000000,
+      buybackMin: 35,
+      risk: "unknown",
+      horizon: "unknown",
+      chains: ["Base", "Solana", "Ethereum L2"],
+      customGoal: ""
+    };
+    const $ = (selector) => document.querySelector(selector);
+    const personalApiKeys = { cmc: "", coinglass: "" };
+    let personalKeyExpiryTimer = null;
+    const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (character) => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    })[character]);
+    function clearPersonalApiKeys(message = "키가 지워졌습니다. 다음 조회에는 다시 입력해야 합니다.") {
+      personalApiKeys.cmc = "";
+      personalApiKeys.coinglass = "";
+      $("#personalCmcKey").value = "";
+      $("#personalCoinglassKey").value = "";
+      if (personalKeyExpiryTimer) clearTimeout(personalKeyExpiryTimer);
+      personalKeyExpiryTimer = null;
+      const status = $("#personalKeyStatus");
+      if (status) status.textContent = message;
+    }
+    function renewPersonalKeyExpiry() {
+      if (personalKeyExpiryTimer) clearTimeout(personalKeyExpiryTimer);
+      if (!personalApiKeys.cmc && !personalApiKeys.coinglass) return;
+      personalKeyExpiryTimer = setTimeout(() => {
+        clearPersonalApiKeys("15분간 사용하지 않아 앱에서 키를 지웠습니다.");
+      }, 15 * 60 * 1000);
+    }
+    function keyActivity() {
+      if (personalApiKeys.cmc || personalApiKeys.coinglass) renewPersonalKeyExpiry();
+    }
+    function hasHttpsSourceAndDate(entry) {
+      if (!entry?.source || !entry.asOf) return false;
+      try { return new URL(entry.source).protocol === "https:"; }
+      catch { return false; }
+    }
+    const newCandidateRecord = () => ({
+      id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+      name: "",
+      ticker: "",
+      chain: "",
+      contract: "",
+      geckoId: "",
+      marketSnapshot: null,
+      migration: "unknown",
+      identitySource: "",
+      tradePath: "",
+      criteria: CRITERIA.map(() => ({ status: "unknown", evidence: "", source: "", asOf: "" })),
+      updatedAt: new Date().toISOString()
+    });
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return { profile: { ...DEFAULT_PROFILE }, candidates: [], currentId: null };
+        const parsed = JSON.parse(raw);
+        return {
+          profile: { ...DEFAULT_PROFILE, ...(parsed.profile || {}) },
+          candidates: Array.isArray(parsed.candidates) ? parsed.candidates : [],
+          currentId: parsed.currentId || null
+        };
+      } catch (error) {
+        console.error("Could not load local research data.", error);
+        return { profile: { ...DEFAULT_PROFILE }, candidates: [], currentId: null };
+      }
+    }
+    function validateBackup(value) {
+      const profile = value?.profile;
+      if (!value || !Array.isArray(value.candidates) || !profile || typeof profile !== "object" || Array.isArray(profile)) return false;
+      if (!Number.isFinite(profile.capMax) || profile.capMax < 0 ||
+          !Number.isFinite(profile.buybackMin) || profile.buybackMin < 0 || profile.buybackMin > 100 ||
+          !["asymmetric", "compounder", "income", "custom"].includes(profile.goal) ||
+          !["unknown", "beginner", "intermediate", "advanced"].includes(profile.experience) ||
+          !["unknown", "low", "medium", "high"].includes(profile.risk) ||
+          !["unknown", "short", "medium", "long"].includes(profile.horizon) ||
+          !Array.isArray(profile.chains) || !profile.chains.every((chain) => typeof chain === "string") ||
+          typeof profile.customGoal !== "string") return false;
+      const ids = new Set();
+      for (const candidate of value.candidates) {
+        if (!candidate || typeof candidate !== "object" || Array.isArray(candidate) ||
+            typeof candidate.id !== "string" || !candidate.id || ids.has(candidate.id) ||
+            typeof candidate.name !== "string" || typeof candidate.ticker !== "string" ||
+            typeof candidate.chain !== "string" || typeof candidate.contract !== "string" ||
+            typeof candidate.geckoId !== "string" ||
+            !["unknown", "yes", "no"].includes(candidate.migration) ||
+            typeof candidate.identitySource !== "string" || typeof candidate.tradePath !== "string" ||
+            !Array.isArray(candidate.criteria) || candidate.criteria.length !== CRITERIA.length ||
+            !candidate.criteria.every((entry) => entry && typeof entry === "object" &&
+              ["unknown", "good", "caution", "risk"].includes(entry.status) &&
+              typeof entry.evidence === "string" && typeof entry.source === "string" &&
+              typeof entry.asOf === "string")) return false;
+        ids.add(candidate.id);
+      }
+      return value.currentId == null || (typeof value.currentId === "string" && ids.has(value.currentId));
+    }
+    let state = loadState();
+    let currentId = state.currentId;
+    function persist() {
+      try {
+        state.currentId = currentId;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (error) {
+        console.error("Could not save local research data.", error);
+        alert("저장 공간에 기록하지 못했습니다. 브라우저 저장 공간을 확인해 주세요.");
+      }
+    }
+    function currentCandidate() {
+      return state.candidates.find((candidate) => candidate.id === currentId) || null;
+    }
+    function setTab(name) {
+      document.querySelectorAll(".tab").forEach((tab) => {
+        const active = tab.dataset.tab === name;
+        tab.setAttribute("aria-selected", String(active));
+        tab.tabIndex = active ? 0 : -1;
+      });
+      document.querySelectorAll('[role="tabpanel"]').forEach((panel) => {
+        panel.hidden = panel.id !== `panel-${name}`;
+      });
+    }
+    function selectedChains() {
+      return [...document.querySelectorAll('#chainOptions input:checked')].map((input) => input.value);
+    }
+    function renderProfile() {
+      const profile = state.profile;
+      $("#goal").value = profile.goal;
+      $("#experience").value = profile.experience;
+      $("#capMax").value = profile.capMax ?? "";
+      $("#buybackMin").value = profile.buybackMin ?? "";
+      $("#risk").value = profile.risk;
+      $("#horizon").value = profile.horizon;
+      $("#customGoal").value = profile.customGoal || "";
+      document.querySelectorAll('#chainOptions input').forEach((input) => {
+        input.checked = (profile.chains || []).includes(input.value);
+      });
+      const goalLabels = {
+        asymmetric: "비대칭 성장 발굴",
+        compounder: "장기 복리",
+        income: "가치 환원 중심",
+        custom: "직접 설정한 목표"
+      };
+      const chains = profile.chains?.length ? profile.chains.join(" · ") : "체인 미선택";
+      $("#profileTags").innerHTML = [
+        `<span class="tag green">${escapeHtml(goalLabels[profile.goal] || goalLabels.asymmetric)}</span>`,
+        `<span class="tag">시총 ≤ ${formatUsd(profile.capMax)}</span>`,
+        `<span class="tag">환매 기준 ≥ ${escapeHtml(profile.buybackMin)}%</span>`,
+        `<span class="tag">${escapeHtml(chains)}</span>`
+      ].join("");
+      const riskText = profile.risk === "unknown"
+        ? "위험 감수 성향은 아직 미확인입니다. 이 설정만으로 위험도를 추정하지 않습니다."
+        : `위험 감수 성향: ${$("#risk").selectedOptions[0].textContent}`;
+      $("#riskNote").textContent = riskText;
+      if ($("#discoveryCap")) $("#discoveryCap").textContent = `시가총액 ≤ ${formatUsd(profile.capMax)} (내 리서치 기준)`;
+    }
+    function formatUsd(value) {
+      const amount = Number(value);
+      if (!Number.isFinite(amount)) return "미설정";
+      return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(amount);
+    }
+    function renderCandidateList() {
+      const list = $("#candidateList");
+      if (!state.candidates.length) {
+        list.innerHTML = '<div class="empty">아직 저장된 후보가 없습니다. 검증 탭에서 후보를 추가하세요.</div>';
+        return;
+      }
+      list.innerHTML = state.candidates.map((candidate) => {
+        const reviews = candidate.criteria || [];
+        const evidenceCount = reviews.filter(hasHttpsSourceAndDate).length;
+        const identity = candidate.contract && candidate.identitySource && candidate.migration !== "unknown" ? "신원 정보 입력됨·미검증" : "토큰 신원 미완료";
+        return `<div class="candidate-row">
+          <div><div class="candidate-name">${escapeHtml(candidate.name || "이름 미입력")} ${candidate.ticker ? `($${escapeHtml(candidate.ticker)})` : ""}</div>
+          <div class="candidate-meta">${escapeHtml(candidate.chain || "체인 미확인")} · ${identity} · 출처·기준일 기록 ${evidenceCount}/12</div></div>
+          <button class="button" type="button" data-open-candidate="${escapeHtml(candidate.id)}">검토 이어하기</button>
+        </div>`;
+      }).join("");
+    }
+    function renderCriteria() {
+      const candidate = currentCandidate();
+      const root = $("#criteria");
+      if (!candidate) {
+        root.innerHTML = '<div class="empty">후보를 등록하거나 목록에서 검토를 이어가세요.</div>';
+        $("#reviewMetrics").innerHTML = "";
+        $("#candidateSnapshot").hidden = true;
+        return;
+      }
+      const snapshot = candidate.marketSnapshot;
+      $("#candidateSnapshot").hidden = !snapshot;
+      $("#candidateSnapshot").innerHTML = snapshot
+        ? `<b>저장 당시 CoinGecko 시장 스냅샷 — 현재 시세 아님</b><div class="data-points" style="margin-top:8px"><div class="data-point"><b>${escapeHtml(formatMetric(snapshot.rank, "rank"))}</b><span>시총 순위</span></div><div class="data-point"><b>${escapeHtml(formatDualCurrency(snapshot.priceUsd, snapshot.usdKrw, "priceUsd"))}</b><span>가격 (USD · 환율 기준 KRW 참고값)</span></div><div class="data-point"><b>${escapeHtml(formatDualCurrency(snapshot.marketCapUsd, snapshot.usdKrw))}</b><span>시가총액 (USD · 환율 기준 KRW 참고값)</span></div><div class="data-point"><b>${escapeHtml(formatDualCurrency(snapshot.volume24hUsd, snapshot.usdKrw))}</b><span>24시간 거래량 (USD · 환율 기준 KRW 참고값)</span></div></div><p class="data-note">저장 시각 ${escapeHtml(snapshot.savedAt ? new Date(snapshot.savedAt).toLocaleString("ko-KR") : "확인 불가")} · CoinGecko 갱신 ${escapeHtml(formatProviderTime(snapshot.providerUpdatedAt))} · USD/KRW 갱신 ${escapeHtml(formatProviderTime(snapshot.fxUpdatedAt))} · CoinGecko ID ${escapeHtml(candidate.geckoId || "확인 불가")} · ${safeHttpsLink(`https://www.coingecko.com/en/coins/${encodeURIComponent(candidate.geckoId || "")}`, "CoinGecko 종목 원문 ↗")}. 토큰 신원·체인 검증은 별도입니다.</p>`
+        : "";
+      candidate.criteria = CRITERIA.map((_, index) => candidate.criteria?.[index] || ({ status: "unknown", evidence: "", source: "", asOf: "" }));
+      const statuses = candidate.criteria.map((entry) => entry.status);
+      const unknown = statuses.filter((status) => status === "unknown").length;
+      const risk = statuses.filter((status) => status === "risk").length;
+      const good = statuses.filter((status) => status === "good").length;
+      const unverifiedGood = candidate.criteria.filter((entry) => entry.status === "good" && !hasHttpsSourceAndDate(entry)).length;
+      const sourced = candidate.criteria.filter(hasHttpsSourceAndDate).length;
+      $("#reviewMetrics").innerHTML = [
+        `<div class="metric"><b>${good}</b><span>양호 메모 (검증 아님)</span></div>`,
+        `<div class="metric"><b>${statuses.length - unknown}</b><span>검토한 항목</span></div>`,
+        `<div class="metric"><b>${sourced}/12</b><span>HTTPS 출처·기준일 기록</span></div>`,
+        `<div class="metric"><b>${risk}</b><span>위험 표시</span></div>`
+      ].join("");
+      $("#reviewNotice").hidden = true;
+      root.innerHTML = CRITERIA.map((title, index) => {
+        const entry = candidate.criteria[index];
+        return `<article class="criterion" data-criterion="${index}">
+          <div class="criterion-head"><span class="criterion-num">${String(index + 1).padStart(2, "0")}</span><span class="criterion-title">${escapeHtml(title)}</span></div>
+          ${entry.status === "good" ? `<p class="data-note">${hasHttpsSourceAndDate(entry) ? "사용자 긍정 메모 — 출처 URL과 기준 시각은 기록됐지만, 이 앱은 링크 내용이나 주장을 검증하지 않았습니다." : "사용자 긍정 메모 — 유효한 HTTPS 출처와 기준 시각이 없어 검증된 사실이 아닙니다."}</p>` : ""}
+          <div class="rating" role="group" aria-label="${escapeHtml(title)} 근거 상태">
+            ${[
+              ["good", "긍정 메모"],
+              ["caution", "주의·미확정"],
+              ["risk", "위험 신호"],
+              ["unknown", "확인 불가"]
+            ].map(([value, label]) => `<button type="button" data-status="${value}" data-value="${value}" aria-pressed="${entry.status === value}">${label}</button>`).join("")}
+          </div>
+          <textarea data-field="evidence" rows="2" placeholder="확인한 사실, 반대 근거, 숫자 정의를 적으세요">${escapeHtml(entry.evidence)}</textarea>
+          <div class="evidence-fields">
+            <input data-field="source" type="url" aria-label="출처 URL" placeholder="확인한 출처 URL" value="${escapeHtml(entry.source)}">
+            <input data-field="asOf" type="text" aria-label="조회 기준 시각" placeholder="조회 시각·게시일" value="${escapeHtml(entry.asOf)}">
+          </div>
+        </article>`;
+      }).join("");
+      if (unverifiedGood) {
+        root.insertAdjacentHTML("beforebegin", `<p class="notice" id="unverifiedEvidence">${unverifiedGood}개 항목이 ‘근거 양호’로 표시됐지만 유효한 HTTPS 출처와 기준 시각이 함께 기록되지 않았습니다. 이는 사용자의 메모일 뿐 확인된 사실이 아닙니다.</p>`);
+      }
+      const identityOk = Boolean(candidate.contract && candidate.identitySource && candidate.migration !== "unknown");
+      if (unknown > 0 || risk > 0 || !identityOk) {
+        root.insertAdjacentHTML("beforebegin", `<p class="notice" id="identityWarning">${!identityOk ? "토큰 신원 미완료: 공식 컨트랙트 주소·출처와 마이그레이션 상태 확인이 필요합니다. " : ""}${unknown ? `${unknown}개 항목 확인 불가. ` : ""}${risk ? `${risk}개 위험 표시. ` : ""}이 상태는 자동 매수·매도 판정이 아닙니다.</p>`);
+      }
+    }
+    function renderAll() {
+      renderProfile();
+      renderCandidateList();
+      $("#identityWarning")?.remove();
+      $("#unverifiedEvidence")?.remove();
+      renderCriteria();
+    }
+    function saveProfile(event) {
+      event.preventDefault();
+      const capMax = Number($("#capMax").value);
+      const buybackMin = Number($("#buybackMin").value);
+      if ($("#capMax").value.trim() === "" || $("#buybackMin").value.trim() === "" ||
+          !Number.isFinite(capMax) || capMax < 0 || !Number.isFinite(buybackMin) || buybackMin < 0 || buybackMin > 100) {
+        alert("시가총액과 환매 기준을 올바르게 입력해 주세요.");
+        return;
+      }
+      state.profile = {
+        goal: $("#goal").value,
+        experience: $("#experience").value,
+        capMax,
+        buybackMin,
+        risk: $("#risk").value,
+        horizon: $("#horizon").value,
+        chains: selectedChains(),
+        customGoal: $("#customGoal").value.trim()
+      };
+      persist();
+      renderProfile();
+      alert("내 리서치 기준을 이 브라우저에 저장했습니다.");
+    }
+    function createCandidate() {
+      syncCandidateFields();
+      syncCandidateCriteria();
+      const candidate = newCandidateRecord();
+      state.candidates.unshift(candidate);
+      currentId = candidate.id;
+      $("#candidateName").value = "";
+      $("#ticker").value = "";
+      $("#chain").value = "";
+      $("#candidateGeckoId").value = "";
+      $("#contract").value = "";
+      $("#migration").value = "unknown";
+      $("#identitySource").value = "";
+      $("#tradePath").value = "";
+      persist();
+      renderAll();
+      setTab("review");
+      $("#candidateName").focus();
+    }
+    function saveDiscoveryCandidate(coin) {
+      if (!coin.id) {
+        alert("CoinGecko ID가 응답에 없어 이 자산은 후보로 저장할 수 없습니다.");
+        return;
+      }
+      const existing = state.candidates.find((candidate) => candidate.geckoId === coin.id);
+      if (existing) {
+        loadCandidate(existing);
+        $("#reviewNotice").textContent = `${coin.name} (${coin.symbol})은 이미 후보 목록에 있습니다. 저장된 검토를 열었습니다. 토큰 신원은 별도 확인이 필요합니다.`;
+        $("#reviewNotice").hidden = false;
+        return;
+      }
+      const candidate = newCandidateRecord();
+      candidate.name = coin.name || "";
+      candidate.ticker = (coin.symbol || "").toUpperCase();
+      candidate.geckoId = coin.id;
+      candidate.marketSnapshot = {
+        rank: coin.rank ?? null,
+        priceUsd: coin.priceUsd ?? null,
+        marketCapUsd: coin.marketCapUsd ?? null,
+        volume24hUsd: coin.volume24hUsd ?? null,
+        usdKrw: overviewPayload?.fx?.status === "ok" ? overviewPayload.fx.usdKrw : null,
+        fxUpdatedAt: overviewPayload?.fx?.updatedAt ?? null,
+        change24hPct: coin.change24hPct ?? null,
+        change7dPct: coin.change7dPct ?? null,
+        change30dPct: coin.change30dPct ?? null,
+        providerUpdatedAt: coin.lastUpdated ?? null,
+        savedAt: new Date().toISOString()
+      };
+      state.candidates.unshift(candidate);
+      currentId = candidate.id;
+      loadCandidate(candidate);
+      $("#reviewNotice").textContent = `${candidate.name} ($${candidate.ticker})이 검토 대기 후보로 저장됐습니다. CoinGecko ID만 저장했으며 체인·컨트랙트 신원은 검증되지 않았습니다.`;
+      $("#reviewNotice").hidden = false;
+      $("#candidateName").focus();
+    }
+    function syncCandidateFields() {
+      const candidate = currentCandidate();
+      if (!candidate) return;
+      candidate.name = $("#candidateName").value.trim();
+      candidate.ticker = $("#ticker").value.trim().toUpperCase();
+      candidate.chain = $("#chain").value.trim();
+      candidate.geckoId = $("#candidateGeckoId").value.trim().toLowerCase();
+      candidate.contract = $("#contract").value.trim();
+      candidate.migration = $("#migration").value;
+      candidate.identitySource = $("#identitySource").value.trim();
+      candidate.tradePath = $("#tradePath").value.trim();
+    }
+    function syncCandidateCriteria() {
+      const candidate = currentCandidate();
+      if (!candidate) return;
+      candidate.criteria = [...document.querySelectorAll(".criterion")].map((card) => ({
+        status: card.querySelector('[aria-pressed="true"][data-status]')?.dataset.status || "unknown",
+        evidence: card.querySelector('[data-field="evidence"]').value.trim(),
+        source: card.querySelector('[data-field="source"]').value.trim(),
+        asOf: card.querySelector('[data-field="asOf"]').value.trim()
+      }));
+      candidate.updatedAt = new Date().toISOString();
+    }
+    function loadCandidate(candidate) {
+      currentId = candidate.id;
+      $("#candidateName").value = candidate.name || "";
+      $("#ticker").value = candidate.ticker || "";
+      $("#chain").value = candidate.chain || "";
+      $("#candidateGeckoId").value = candidate.geckoId || "";
+      $("#contract").value = candidate.contract || "";
+      $("#migration").value = candidate.migration || "unknown";
+      $("#migration").value = candidate.migration || "unknown";
+      $("#identitySource").value = candidate.identitySource || "";
+      $("#tradePath").value = candidate.tradePath || "";
+      $("#tradePath").value = candidate.tradePath || "";
+      persist();
+      renderAll();
+      setTab("review");
+    }
+    function buildResearchPrompt(candidate = null) {
+      const profile = state.profile;
+      const chains = profile.chains?.length ? profile.chains.join(", ") : "제한 없음";
+      const theme = $("#theme").value.trim();
+      const exclusions = $("#exclusions").value.trim();
+      const number = $("#count").value;
+      const risk = profile.risk === "unknown" ? "위험 허용도 미확인 — 공격적 성향으로 가정하지 말 것" : $("#risk").selectedOptions[0].textContent;
+      const experience = profile.experience === "unknown" ? "설명 수준 미확인 — 쉬운 한국어와 핵심 용어 풀이 포함" : $("#experience").selectedOptions[0].textContent;
+      const reviewedCriteria = candidate?.criteria?.length
+        ? candidate.criteria.map((entry, index) =>
+          `${index + 1}. ${CRITERIA[index]} — ${entry.status === "good" && !hasHttpsSourceAndDate(entry) ? "사용자 긍정 메모(유효한 HTTPS 출처/기준 시각 없음, 미검증)" : ({
+            good: "근거 양호 표시",
+            caution: "주의·미확정 표시",
+            risk: "위험 신호 표시",
+            unknown: "확인 불가"
+          }[entry.status] || "확인 불가")}${entry.evidence ? `; 기록: ${entry.evidence}` : ""}${entry.source ? `; 출처: ${entry.source}` : ""}${entry.asOf ? `; 기준 시각: ${entry.asOf}` : ""}`
+        ).join("\n")
+        : "아직 점검 기록 없음";
+      const lines = [
+        "한국어로 답하는 신중한 온체인 리서치 도우미로서 아래 조사만 수행한다.",
+        "",
+        "## 나의 확인된 조사 선호",
+        `- 목표: ${$("#goal").selectedOptions[0].textContent}`,
+        `- 최대 시가총액: ${formatUsd(profile.capMax)} (가격과 시총은 출처·조회 시각 표기)`,
+        `- 환매/소각 필터: 수수료 대비 ${profile.buybackMin}% 이상이 실제로 토큰 매입·소각에 쓰이는지 검증. 공식 정책과 실제 온체인 집행을 분리.`,
+        `- 관심 체인: ${chains}`,
+        `- 위험 성향: ${risk}`,
+        `- 경험 수준: ${experience}`,
+        `- 관찰 기간: ${profile.horizon === "unknown" ? "미확인" : $("#horizon").selectedOptions[0].textContent}`,
+        `- 추가 선호: ${profile.customGoal || "별도 입력 없음"}`,
+        "",
+        "## 조사 요구",
+        candidate ? `- 대상은 ${candidate.name || "프로젝트 미입력"} ($${candidate.ticker || "티커 미입력"})${candidate.chain ? ` / ${candidate.chain}` : ""}이다. 사용자가 입력한 주소: ${candidate.contract || "미입력"}; 마이그레이션: ${{ yes: "있음(이전/최신 주소 대조 필요)", no: "없음(공식 출처 재검증)", unknown: "미확인" }[candidate.migration] || "미확인"}; 신원 출처: ${candidate.identitySource || "미입력"}; 공식 거래 경로: ${candidate.tradePath || "미입력"}. 입력값을 독립적으로 검증하기 전까지 사실로 단정하지 않는다.` : `- 기존에 아는 종목에 고정하지 말고 처음부터 후보를 찾는다. 조사 테마: ${theme || "현재 자본·수익 성장 신호를 확인해 선정"}. 후보는 최대 ${number}개이며, 조건을 충족하지 못하면 숫자를 억지로 채우지 않는다.`,
+        candidate?.geckoId ? `- 저장된 CoinGecko ID: ${candidate.geckoId}. 이는 시장 데이터 연결용 식별자일 뿐 컨트랙트·체인 공식 검증을 뜻하지 않는다.` : "",
+        candidate ? `- 사용자가 기록한 12대 항목 상태(사실 확정이 아니라 사용자 메모이며, 출처를 다시 검증):\n${reviewedCriteria}` : "",
+        exclusions ? `- 제외: ${exclusions}` : "",
+        "- 티커만으로 토큰을 식별하지 말고 공식 프로젝트명·체인·최신 컨트랙트·마이그레이션·실제 거래 경로를 교차 확인한다.",
+        "- 각 주장에 실제로 열어 확인한 출처 링크와 게시일/조회 시각을 붙인다. 링크를 지어내거나 검색결과 페이지를 공식 링크처럼 제시하지 않는다.",
+        "- 가격·시총·TVL·수수료·프로토콜 매출·순수익·토큰 보유자 수익을 구분한다. 자료가 없으면 '확인 불가'라고 쓴다.",
+        "- 바이백/소각은 정책 발표, 실제 매입, 소각 완료를 구분하고 분자·분모·기간·온체인 증거를 제시한다.",
+        "- 유통량·총량·최대량·월별 언락과 희석, 상위 지갑 집중, 컨트랙트 관리자 권한·보안, 유동성·거래량을 확인한다.",
+        "- 프로젝트 품질, 프로토콜 경제성, 토큰 가치 포착, 토큰 가치평가를 서로 분리한다. 점수는 매수 신호로 표현하지 않는다.",
+        "- 강점과 반대 근거, 시나리오 가정, 재평가 요인과 명확한 실패 조건을 모두 쓴다.",
+        "- 확인하지 못한 자료와 출처 간 불일치를 숨기지 않는다. 사용자의 선호에 맞추려고 근거를 과장하지 않는다.",
+        "",
+        "## 답변 구성",
+        "1. 조회 시각과 sector finder 표(자본·수익 기회 순위, 각 후보 적합성 및 언락 상태).",
+        "2. 후보별 결론, 토큰 신원·검증 컨트랙트·거래 경로, 경제활동·수수료·프로토콜 순수익·토큰 귀속액을 분리.",
+        "3. 12대 필터별 상태·근거·출처·미확인 사항. 점수에 신뢰도나 데이터 결측을 숨기지 말 것.",
+        "4. 유통/총/최대 공급량, FDV, 월별 언락·희석 및 토큰 가치포착.",
+        "5. 경쟁·해자·valuation 비교와 Bear/Base/Bull 가정, 촉매, 재평가 조건, 실패 트리거.",
+        "6. 사용자의 기준 적합성 및 제외 후보와 제외 사유. 투자 권유·수익 보장·근거 없는 가격 목표는 금지."
+      ].filter(Boolean);
+      return lines.join("\n");
+    }
+    async function copyText(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch (error) {
+        const output = $("#promptOutput");
+        output.value = text;
+        output.focus();
+        output.select();
+        const copied = document.execCommand("copy");
+        if (!copied) throw error;
+      }
+    }
+    let discoveryController = null;
+    let trendScanController = null;
+    let lastMarketRequestedAt = null;
+      function formatMetric(value, key) {
+        if (value === null || value === undefined || value === "") return "확인 불가";
+        if (typeof value === "number") {
+          if (key === "rank") return new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 }).format(value);
+          if (key === "count") return new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 }).format(value);
+          if (key.toLowerCase().includes("supply") || key === "circulatingSupply" || key === "totalSupply" || key === "maxSupply") {
+            return new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 4 }).format(value);
+          }
+          if (key.toLowerCase().includes("ratio") || key.toLowerCase().includes("rate") || key.toLowerCase().includes("pct")) {
+            return `${new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 4 }).format(value)}${key.toLowerCase().includes("pct") ? "%" : ""}`;
+          }
+          if (key.toLowerCase().includes("krw")) {
+            if (key === "priceKrw" && value > 0 && value < 1e-17) {
+              return new Intl.NumberFormat("ko-KR", { style: "currency", currency: "KRW", notation: "scientific", maximumSignificantDigits: 6 }).format(value);
+            }
+            const digits = key === "priceKrw" ? Math.min(20, Math.max(2, value > 0 && value < 1 ? Math.ceil(-Math.log10(value)) + 3 : 2)) : 2;
+            return new Intl.NumberFormat("ko-KR", { style: "currency", currency: "KRW", minimumFractionDigits: 2, maximumFractionDigits: digits }).format(value);
+          }
+          if (key.toLowerCase().includes("usd") || key === "priceUsd" || key.endsWith("Volume24hUsd") || key.startsWith("totalFees")) {
+            if (key === "priceUsd" && value > 0 && value < 1e-17) {
+              return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", notation: "scientific", maximumSignificantDigits: 6 }).format(value);
+            }
+            const digits = key === "priceUsd" ? Math.min(20, Math.max(2, value > 0 && value < 1 ? Math.ceil(-Math.log10(value)) + 3 : 2)) : 2;
+            return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2, maximumFractionDigits: digits }).format(value);
+          }
+          return new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 4 }).format(value);
+        }
+        if (Array.isArray(value)) return value.length ? value.join(", ") : "확인 불가";
+        if (typeof value === "object") return Object.keys(value).length ? Object.keys(value).join(", ") : "확인 불가";
+        return String(value);
+      }
+      function formatDualCurrency(usd, fxRate, key = "marketCapUsd") {
+        const usdText = formatMetric(usd, key);
+        const krw = Number.isFinite(usd) && Number.isFinite(fxRate) ? formatMetric(usd * fxRate, key === "priceUsd" ? "priceKrw" : "marketCapKrw") : "한화 환산 확인 불가";
+        return `${usdText} · ${krw}`;
+      }
+      function formatDataAge(timestamp, staleAfterMinutes = 15) {
+        const updatedAt = Date.parse(timestamp);
+        if (!Number.isFinite(updatedAt)) return "갱신 시각 확인 불가";
+        const elapsed = Date.now() - updatedAt;
+        if (elapsed < -60000) return "제공자 시각이 미래입니다 — 시계/자료 오류 확인 필요";
+        const minutes = Math.max(0, Math.floor(elapsed / 60000));
+        const age = minutes < 60 ? `${minutes}분 전` : minutes < 1440 ? `${Math.floor(minutes / 60)}시간 전` : `${Math.floor(minutes / 1440)}일 전`;
+        return minutes > staleAfterMinutes ? `신선도 주의: ${age} (${staleAfterMinutes}분 초과)` : `${age}`;
+      }
+      function formatProviderTime(timestamp) {
+        const parsed = Date.parse(timestamp);
+        if (!Number.isFinite(parsed)) return "확인 불가";
+        return `${new Date(parsed).toLocaleString("ko-KR")} · ${formatDataAge(new Date(parsed).toISOString())}`;
+      }
+      function safeHttpsLink(value, label) {
+        if (typeof value !== "string") return "";
+        try {
+          const url = new URL(value);
+          if (url.protocol !== "https:") return "";
+          return `<a href="${escapeHtml(url.href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(label)}</a>`;
+        } catch {
+          return "";
+        }
+      }
+      function renderMarketResults(payload) {
+        const root = $("#liveResults");
+        const snapshot = `<div class="status-line">사용자 조회 시작: ${escapeHtml(lastMarketRequestedAt || "확인 불가")} · 서버 응답: ${escapeHtml(payload.fetchedAt ? new Date(payload.fetchedAt).toLocaleString("ko-KR") : "확인 불가")} · 공유 캐시 사용 안 함. 각 원자료는 아래 제공자 갱신 시각을 우선 확인하세요.</div>`;
+        const cards = (payload.sources || []).map((source) => {
+          const statusLabel = { ok: "조회 완료", unavailable: "조회 실패", not_configured: "키 미설정" }[source.status] || source.status;
+          const data = source.data;
+          const records = data?.pairs || data?.pools || (data && !data.trend ? [data] : []);
+          const emptyResultNote = source.status === "ok" &&
+            (data === null || (Array.isArray(data?.pairs) && records.length === 0) || (Array.isArray(data?.pools) && records.length === 0))
+            ? "요청은 정상 완료됐지만 일치하는 레코드가 없습니다. 값이 0이거나 유동성·안전성이 충분하다는 뜻이 아닙니다."
+            : "";
+          const rendered = records.map((record, index) => {
+            const points = Object.entries(DATA_LABELS)
+              .filter(([key]) => record[key] !== null && record[key] !== undefined)
+              .map(([key, label]) => `<div class="data-point"><b>${escapeHtml(formatMetric(record[key], key))}</b><span>${escapeHtml(label)}</span></div>`)
+              .join("") + Object.entries(record.flags || {})
+                .map(([key, value]) => `<div class="data-point"><b>${escapeHtml(formatMetric(value, key))}</b><span>${escapeHtml(DATA_LABELS[key] || key)}</span></div>`)
+                .join("");
+            const expected = source.source === "CoinGecko"
+              ? ["marketCapRank", "priceUsd", "marketCapUsd", "fdvUsd", "circulatingSupply", "totalSupply", "maxSupply", "volume24hUsd"]
+              : source.source === "DEX Screener" || source.source === "GeckoTerminal"
+                ? ["priceUsd", "marketCapUsd", "fdvUsd", "liquidityUsd", "volume24hUsd"]
+                : source.source === "DefiLlama"
+                  ? ["tvlUsd", "totalFees24hUsd", "totalFees7dUsd", "totalFees30dUsd"]
+                  : [];
+            const missing = expected.filter((key) => !(record.feesStatus === "unavailable" && key.startsWith("totalFees")) &&
+              (record[key] === null || record[key] === undefined || record[key] === ""));
+            const title = record.name || record.network || record.symbol || (record.baseToken?.symbol ? `${record.baseToken.symbol}/${record.quoteToken?.symbol || ""}` : "") || (records.length > 1 ? `시장 ${index + 1}` : source.source);
+            const links = [
+              safeHttpsLink(record.url, "출처 ↗"),
+              safeHttpsLink(record.homepage, "프로젝트 홈페이지 (CoinGecko 제공) ↗"),
+              record.pairAddress ? safeHttpsLink(`https://dexscreener.com/${encodeURIComponent(record.chain || "")}/${encodeURIComponent(record.pairAddress)}`, "DEX Screener 페어 ↗") : ""
+            ].filter(Boolean).join(" · ");
+            const note = record.lastUpdated || record.tvlAsOf || record.pairCreatedAt || record.createdAt || record.totalFees30dPeriodEnd || record.asOf || "";
+            const feesStatus = record.feesStatus
+              ? `<p class="data-note">수수료 자료 상태: ${record.feesStatus === "ok" ? "조회 완료 (값이 없으면 아래 ‘확인 불가’를 확인)" : "조회 실패 — 수수료가 0이라는 뜻이 아닙니다."}${record.feesError ? ` ${escapeHtml(record.feesError)}` : ""}</p>`
+              : "";
+            return `<div class="data-source"><h3>${escapeHtml(title)} ${links ? `<span class="small-note">${links}</span>` : ""}</h3>${points ? `<div class="data-points">${points}</div>` : '<span class="small-note">표시 가능한 수치가 없습니다.</span>'}${missing.length ? `<p class="data-note">확인 불가(제공자 응답에 값 없음): ${missing.map((key) => escapeHtml(DATA_LABELS[key])).join(", ")}</p>` : ""}${source.receivedAt ? `<p class="data-note">서버 수신 시각: ${escapeHtml(new Date(source.receivedAt).toLocaleString("ko-KR"))}</p>` : ""}${note ? `<p class="data-note">제공자 기준 시각: ${escapeHtml(note)} · ${escapeHtml(formatDataAge(note))}</p>` : ""}${feesStatus}${record.warning ? `<p class="data-note">${escapeHtml(record.warning)}</p>` : ""}${record.disclaimer ? `<p class="data-note">${escapeHtml(record.disclaimer)}</p>` : ""}</div>`;
+          }).join("");
+          const trend = data?.trend ? renderTrendCard(data.trend, data) : "";
+          return `<article class="data-source"><h3>${escapeHtml(source.source)} <span class="status-badge ${escapeHtml(source.status)}">${escapeHtml(statusLabel)}</span></h3>${source.error ? `<p class="data-note">${escapeHtml(source.error)}</p>` : ""}${emptyResultNote ? `<p class="data-note">${escapeHtml(emptyResultNote)}</p>` : ""}${rendered}${trend}${source.data?.warning && !records.length ? `<p class="data-note">${escapeHtml(source.data.warning)}</p>` : ""}</article>`;
+        }).join("");
+        const limits = (payload.limits || []).map((limit) => `<li>${escapeHtml(limit)}</li>`).join("");
+        root.innerHTML = `${snapshot}${cards || '<div class="empty">조회할 공개 데이터 출처가 없습니다. 티커, CoinGecko ID, DefiLlama slug 또는 체인·주소를 입력하세요.</div>'}${limits ? `<p class="notice"><ul>${limits}</ul></p>` : ""}`;
+        renderRedTeam(payload);
+      }
+      function renderTrendCard(trend, data) {
+        const metrics = trend.metrics || {};
+        const items = [
+          ["return7dPct", "7일 변화율"],
+          ["return30dPct", "30일 변화율"],
+          ["priceVsSma20Pct", "현재가 vs 20일선"],
+          ["sma20VsSma50Pct", "20일선 vs 50일선"],
+          ["drawdownFrom30dHighPct", "30일 고점 대비 하락폭"]
+        ].map(([key, label]) => `<div class="data-point"><b>${escapeHtml(formatMetric(metrics[key], key))}</b><span>${label}</span></div>`).join("");
+        const positive = trend.status === "trend_reversal_conditions";
+        const observations = (trend.observations || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("");
+        return `<div class="data-source"><h3>90일 가격 모멘텀 — 계산 기준 공개</h3><p class="trend-status ${positive ? "positive" : ""}">${escapeHtml(trend.label || "추세 확인 불가")}</p>${items ? `<div class="data-points">${items}</div>` : ""}<p class="data-note">분석 표본: ${escapeHtml(trend.sampleDays ?? "확인 불가")}일. 7일 저점 높임: ${escapeHtml(formatMetric(metrics.higherLow, "higherLow"))}; 20일선 상승: ${escapeHtml(formatMetric(metrics.risingSma20, "risingSma20"))}. 일별 원자료 최신 시각: ${escapeHtml(data.latestPricePointAt ? new Date(data.latestPricePointAt).toLocaleString("ko-KR") : "확인 불가")} (${escapeHtml(formatDataAge(data.latestPricePointAt, 2880))}).</p>${observations ? `<ul class="data-note">${observations}</ul>` : ""}<p class="data-note">${escapeHtml(trend.disclaimer || "기술 지표는 참고 정보이며 매매 신호가 아닙니다.")}</p></div>`;
+      }
+      function renderRedTeam(payload) {
+        const issues = [];
+        const nextChecks = [];
+        const sources = payload.sources || [];
+        const pairs = sources.flatMap((source) => source.data?.pairs || []);
+        const gecko = sources.find((source) => source.source === "CoinGecko");
+        const trendSource = sources.find((source) => source.source === "CoinGecko 90-day trend");
+        if (!payload.requested?.address) {
+          issues.push("토큰 컨트랙트 주소를 조회하지 않았습니다. 티커 검색만으로는 동명·사칭 토큰을 배제할 수 없습니다.");
+          nextChecks.push("공식 프로젝트 문서의 토큰 주소와 체인을 탐색기에서 대조한 뒤, 주소 기반 DEX·보안 조회를 다시 실행하세요.");
+        }
+        if (!payload.requested?.geckoId) {
+          issues.push("CoinGecko ID가 없어 글로벌 시총 순위와 90일 추세를 이 자산에 연결하지 못했습니다. 티커를 임의 매칭하지 않았습니다.");
+          nextChecks.push("프로젝트명·티커가 일치하는 CoinGecko 자산 페이지를 직접 확인하고 올바른 ID로 가격·공급량을 조회하세요.");
+        }
+        if (gecko?.data && !gecko.data.marketCapRank) issues.push("CoinGecko 시총 순위가 비어 있어 순위 기반 비교는 확인 불가입니다.");
+        sources.filter((source) => source.status === "unavailable").forEach((source) => {
+          issues.push(`${source.source} 조회가 실패했습니다. 누락값을 정상·안전 신호로 해석하지 마세요.`);
+          nextChecks.push(`${source.source} 오류를 확인한 뒤 재조회하고, 복구 전까지 그 출처의 수치는 판단에서 제외하세요.`);
+        });
+        sources.filter((source) => source.status === "not_configured").forEach((source) => {
+          issues.push(`${source.source}가 연결되지 않았습니다. 해당 지표는 평가에 포함되지 않았습니다.`);
+          nextChecks.push(`${source.source}가 꼭 필요하면 공식 API 요금제·키 설정을 확인하세요. 연결 전에는 해당 데이터가 없다고 간주하고 판단을 보류하세요.`);
+        });
+        sources.filter((source) => source.status === "ok" && source.source === "DEX Screener" && !(source.data?.pairs || []).length)
+          .forEach((source) => issues.push("DEX Screener가 일치하는 거래 풀을 반환하지 않았습니다. 이는 유동성이 충분하거나 위험이 낮다는 뜻이 아닙니다."));
+        sources.filter((source) => source.status === "ok" && source.source === "GoPlus Token Security" && !source.data)
+          .forEach((source) => issues.push("GoPlus에서 이 주소의 보안 레코드를 받지 못했습니다. 빈 결과는 안전 판정이 아닙니다."));
+        const llama = sources.find((source) => source.source === "DefiLlama");
+        if (llama?.data?.feesStatus === "unavailable") {
+          issues.push("DefiLlama TVL 조회와 별개로 수수료 자료 조회가 실패했습니다. 수수료·프로토콜 수익·토큰 귀속액은 확인 불가입니다.");
+          nextChecks.push("DefiLlama 수수료 출처를 다시 확인하고, 수수료·프로토콜 수익·토큰 보유자 귀속을 각각 대조하세요.");
+        } else if (!payload.requested?.protocol) {
+          issues.push("DefiLlama 프로토콜 ID를 조회하지 않아 TVL·수수료 자료가 연결되지 않았습니다.");
+          nextChecks.push("공식 프로젝트와 DefiLlama 프로토콜 항목이 같은 대상을 가리키는지 확인한 뒤 프로토콜 ID를 연결하세요.");
+        }
+        if (trendSource?.status === "ok" && ["correction_possible", "mixed", "insufficient_data"].includes(trendSource.data?.trend?.status)) {
+          issues.push(`가격 흐름 반대 근거: ${trendSource.data.trend.label || "추세 판단 보류"}. 상승 전환 확인 전까지 성급한 결론을 경계하세요.`);
+        }
+        if (gecko?.data?.marketCapUsd && gecko.data.fdvUsd && gecko.data.fdvUsd / gecko.data.marketCapUsd > 2) {
+          issues.push(`FDV가 현재 시가총액의 ${formatMetric(gecko.data.fdvUsd / gecko.data.marketCapUsd, "ratio")}배입니다. 잠재 희석·공급량 정의를 별도로 검증해야 합니다.`);
+        }
+        const providerMarketCaps = [gecko?.data?.marketCapUsd, ...pairs.map((pair) => pair.marketCapUsd)]
+          .filter((value) => Number.isFinite(value) && value > 0);
+        if (providerMarketCaps.length > 1 && Math.max(...providerMarketCaps) / Math.min(...providerMarketCaps) > 1.25) {
+          issues.push("CoinGecko와 DEX 제공 시가총액이 25% 넘게 다릅니다. 공급량·유통량 정의, 거래 풀 매칭, 갱신 시각 차이를 대조하기 전에는 한 숫자를 확정값으로 쓰지 마세요.");
+        }
+        pairs.forEach((pair) => {
+          if (Number.isFinite(pair.liquidityUsd) && pair.liquidityUsd < 25000) {
+            issues.push(`${pair.baseToken?.symbol || "DEX"} 풀 유동성이 $25,000 미만입니다. 큰 주문은 표시 가격과 체결 가격이 크게 다를 수 있습니다.`);
+            nextChecks.push("대표 풀의 유동성과 실제 주문 규모별 예상 슬리피지를 확인하세요. 화면 가격은 체결 가격 보장이 아닙니다.");
+          }
+          if (Number.isFinite(pair.volume24hUsd) && Number.isFinite(pair.liquidityUsd) && pair.liquidityUsd > 0 && pair.volume24hUsd / pair.liquidityUsd > 5) {
+            issues.push(`${pair.baseToken?.symbol || "DEX"}의 24시간 거래량/유동성 비율이 5배를 넘습니다. 거래량 지속성·워시트레이딩·슬리피지를 확인하세요.`);
+          }
+        });
+        if (!payload.requested?.address || !sources.some((source) => source.source === "GoPlus Token Security" && source.status === "ok" && source.data)) {
+          nextChecks.push("보안 API 결과만으로 안전을 단정하지 말고, 관리자 권한·상위 보유자 집중·베스팅/언락 계약을 공식 탐색기와 문서에서 별도 확인하세요.");
+        }
+        nextChecks.push("바이백·소각은 정책 발표가 아니라 실제 온체인 매입/소각 트랜잭션과 기간별 수수료 대비 비율을 확인하세요.");
+        if (!issues.length) issues.push("현재 입력 자료에서 자동으로 포착한 뚜렷한 반대 신호가 없습니다. 이것은 안전 판정이 아니며 아래 구조적 한계는 그대로 남습니다.");
+        const architectureRisks = [
+          "배포 구조: /api/research는 공개 엔드포인트이며 사용자별 인증·요청 제한이 없습니다. 유료 CoinMarketCap/CoinGlass 키를 연결하기 전에 제공자 사용량 한도와 Vercel 비용 알림을 설정해야 합니다.",
+          "분석 범위: 상위 보유자·팀 지갑, 실제 바이백 트랜잭션, 베스팅·언락 계약, 관리자 권한을 자동 검증하지 않습니다. 관련 항목은 확인 불가로 남겨야 합니다.",
+          "시세 판정: 90일 가격 이력의 규칙 기반 지표만 계산하며 시장 구조·거래소 간 괴리·체결 비용·뉴스를 반영하지 않습니다. 조정 종료나 상승을 확정하지 않습니다."
+        ];
+        $("#redTeamResults").hidden = false;
+        $("#redTeamResults").innerHTML = `<h3>레드팀 — 사용자 관점의 반대 근거와 앱 자체 결함</h3><p class="data-note">자동 규칙으로 포착한 확인 항목이며 조작·사기·손실을 확정하는 판정이 아닙니다. 유동성 $25,000·거래량/유동성 5배 기준은 앱의 1차 경고선이지 보편적 안전 기준이 아닙니다.</p><b>이 후보에 불리한 점 / 확인 공백</b><ul>${issues.map((issue) => `<li>${escapeHtml(issue)}</li>`).join("")}</ul><b style="display:block;margin-top:10px">다음 확인 행동 — 우선순위 체크리스트</b><ol>${[...new Set(nextChecks)].map((check) => `<li>${escapeHtml(check)}</li>`).join("")}</ol><b style="display:block;margin-top:10px">배포·분석 구조상 남은 위험</b><ul>${architectureRisks.map((issue) => `<li>${escapeHtml(issue)}</li>`).join("")}</ul>`;
+      }
+      let overviewPayload = null;
+      let overviewRequest = null;
+      function setConnectionStatus(message) {
+        $("#connectionStatus").textContent = message;
+      }
+      function renderMarketOverview(payload) {
+        overviewPayload = payload;
+        const market = payload.markets || {};
+        const fx = payload.fx || {};
+        const marketPoints = market.status === "ok"
+          ? `<div class="metric"><b>${escapeHtml(formatMetric(market.totalMarketCapUsd, "marketCapUsd"))}</b><span>전체 암호자산 시가총액 (USD)</span></div><div class="metric"><b>${escapeHtml(formatMetric(market.totalMarketCapKrw, "marketCapKrw"))}</b><span>전체 암호자산 시가총액 (KRW, CoinGecko 원자료)</span></div><div class="metric"><b>${escapeHtml(formatDualCurrency(market.totalVolume24hUsd, fx.status === "ok" ? fx.usdKrw : null))}</b><span>전체 24시간 거래량 (환산 KRW는 환율 기준 참고값)</span></div><div class="metric"><b>${escapeHtml(formatMetric(market.marketCapChange24hPct, "change24hPct"))}</b><span>전체 시총 24시간 변화</span></div><div class="metric"><b>${escapeHtml(formatMetric(market.btcDominancePct, "change24hPct"))}</b><span>BTC 시총 점유율</span></div><div class="metric"><b>${escapeHtml(formatMetric(market.ethDominancePct, "change24hPct"))}</b><span>ETH 시총 점유율</span></div><div class="metric"><b>${escapeHtml(formatMetric(market.activeCryptocurrencies, "count"))}</b><span>CoinGecko 집계 활성 자산</span></div>`
+          : `<p class="notice">전체 시장 요약: ${escapeHtml(market.error || "확인 불가")}</p>`;
+        const fxStatus = fx.status === "ok"
+          ? `USD/KRW 환율: 1 USD = ${escapeHtml(formatMetric(fx.usdKrw, "fxRate"))} KRW · 환율 제공자 갱신 ${escapeHtml(fx.updatedAt ? new Date(fx.updatedAt).toLocaleString("ko-KR") : "확인 불가")} (${escapeHtml(formatDataAge(fx.updatedAt, 1440))})${fx.nextUpdateAt ? ` · 다음 예정 갱신 ${escapeHtml(new Date(fx.nextUpdateAt).toLocaleString("ko-KR"))}` : ""}. 거래소 실시간 환율이 아닙니다.`
+          : `환율 조회 실패: ${escapeHtml(fx.error || "확인 불가")}. 임의의 한화 값을 표시하지 않습니다.`;
+        const marketStatus = market.status === "ok"
+          ? `CoinGecko 시장자료 갱신 ${escapeHtml(market.updatedAt ? new Date(market.updatedAt).toLocaleString("ko-KR") : "확인 불가")} (${escapeHtml(formatDataAge(market.updatedAt))})`
+          : "CoinGecko 시장자료 갱신 시각 확인 불가";
+        $("#marketOverview").innerHTML = `<div class="metric-strip">${marketPoints}</div><p class="data-note">${marketStatus} · USD/KRW 환율 출처: ${escapeHtml(fx.source || "확인 불가")}.</p><p class="data-note">${escapeHtml(fxStatus)}</p><p class="data-note">${escapeHtml(payload.disclaimer || "")}</p>`;
+        if (market.status === "ok" && fx.status === "ok") {
+          setConnectionStatus(`API 응답 확인 · 시장 ${market.updatedAt ? formatDataAge(market.updatedAt) : "시각 확인 불가"} · 환율 ${fx.updatedAt ? formatDataAge(fx.updatedAt, 1440) : "시각 확인 불가"} · 틱 실시간 아님`);
+        } else if (market.status === "ok" || fx.status === "ok") {
+          setConnectionStatus("일부 API 응답 · 일부 자료 미연결 — 화면 상태 확인");
+        } else {
+          setConnectionStatus("시장·환율 API 응답 실패 — 실시간 자료 미연결");
+        }
+        if (rankingPayload) renderRanking(rankingPayload, $("#rankFilter").value);
+      }
+      async function fetchMarketOverview() {
+        if (location.protocol === "file:") {
+          setConnectionStatus("로컬 file:// 모드 — 실시간 API 연결 안 됨");
+          $("#marketOverview").innerHTML = '<div class="notice">현재 이 페이지는 로컬 파일로 열려 있어 시장·환율 API에 연결되지 않습니다. 실시간에 가까운 제공자 자료를 조회하려면 Vercel 배포 URL에서 열어 주세요.</div>';
+          return;
+        }
+        if (overviewRequest) return overviewRequest;
+        $("#marketOverview").innerHTML = '<div class="status-line">CoinGecko 시장 요약과 USD/KRW 환율 출처에 요청 중입니다. 제공자 응답 대기 중이며 실시간 연결은 아직 확인되지 않았습니다.</div>';
+        overviewRequest = (async () => {
+          try {
+            const response = await fetch("/api/research?mode=overview", { headers: { Accept: "application/json" }, cache: "no-store" });
+            let result;
+            try { result = await response.json(); }
+            catch { throw new Error("시장 요약 API가 JSON이 아닌 응답을 반환했습니다."); }
+            if (!response.ok) throw new Error(result.error || `시장 요약 조회 실패 (${response.status})`);
+            renderMarketOverview(result);
+            if (result.fx?.status !== "ok" || result.markets?.status !== "ok") {
+              $("#marketOverview").insertAdjacentHTML("afterbegin", '<div class="notice">일부 출처만 연결됐습니다. 누락된 환율·시장 지표는 추정하지 않으며, 아래 각 출처 상태를 확인하세요.</div>');
+            }
+          } catch (error) {
+            console.error("Market overview request failed.", error);
+            setConnectionStatus("시장·환율 API 연결 안 됨 — 원자료 확인 불가");
+            $("#marketOverview").innerHTML = `<div class="notice">시장 요약을 불러오지 못했습니다: ${escapeHtml(error.message)}. 한화 환산과 전체 시장 규모를 임의로 표시하지 않았습니다.</div>`;
+          } finally {
+            overviewRequest = null;
+          }
+        })();
+        return overviewRequest;
+      }
+      let rankingCoins = [];
+      let rankingPayload = null;
+      function renderRanking(payload, filter = "") {
+        rankingPayload = payload;
+        rankingCoins = payload.coins || [];
+        const query = filter.trim().toLowerCase();
+        const rows = rankingCoins.filter((coin) => !query || `${coin.name} ${coin.symbol} ${coin.id}`.toLowerCase().includes(query));
+        const fxRate = overviewPayload?.fx?.status === "ok" ? overviewPayload.fx.usdKrw : null;
+        const body = rows.map((coin) => `<tr><td>${escapeHtml(formatMetric(coin.rank, "rank"))}</td><td>${safeHttpsLink(coin.url, `${coin.name || "이름 확인 불가"} (${coin.symbol || "?"})`) || escapeHtml(`${coin.name || "이름 확인 불가"} (${coin.symbol || "?"})`)}<div class="small-note">분야·네트워크: 종목 정보 조회 전 확인 불가</div><button class="button" type="button" data-rank-coin-id="${escapeHtml(coin.id || "")}" data-rank-symbol="${escapeHtml(coin.symbol || "")}" ${coin.id ? "" : "disabled"}>분야·네트워크 조회</button></td><td>${escapeHtml(formatDualCurrency(coin.priceUsd, fxRate, "priceUsd"))}</td><td>${escapeHtml(formatDualCurrency(coin.marketCapUsd, fxRate))}</td><td>${escapeHtml(formatDualCurrency(coin.volume24hUsd, fxRate))}</td><td>${escapeHtml(formatMetric(coin.circulatingSupply, "circulatingSupply"))}</td><td>${escapeHtml(formatMetric(coin.totalSupply, "totalSupply"))}</td><td>${escapeHtml(formatMetric(coin.maxSupply, "maxSupply"))}</td><td>${escapeHtml(formatDualCurrency(coin.fullyDilutedValuationUsd, fxRate))}</td><td>${escapeHtml(formatMetric(coin.change24hPct, "change24hPct"))}</td><td>${escapeHtml(formatMetric(coin.change7dPct, "change7dPct"))}</td><td>${escapeHtml(formatMetric(coin.change30dPct, "change30dPct"))}</td><td>${escapeHtml(formatProviderTime(coin.lastUpdated))}</td></tr>`).join("");
+        const page = payload.page;
+        const updated = rankingCoins.map((coin) => Date.parse(coin.lastUpdated)).filter(Number.isFinite);
+        const updatedLabel = updated.length ? `${new Date(Math.max(...updated)).toLocaleString("ko-KR")} (${formatDataAge(new Date(Math.max(...updated)).toISOString())})` : "확인 불가";
+        $("#rankResults").innerHTML = `<div class="status-line">CoinGecko API 응답 · 시총순위 페이지 ${escapeHtml(page)} · 응답 ${escapeHtml(payload.returned)}개 · 사용자 요청 ${escapeHtml(lastMarketRequestedAt || "확인 불가")} · 서버 응답 ${escapeHtml(payload.fetchedAt ? new Date(payload.fetchedAt).toLocaleString("ko-KR") : "확인 불가")} · CoinGecko 데이터 갱신 ${escapeHtml(updatedLabel)}. 실시간 틱/체결 데이터는 아닙니다.</div>${!fxRate ? '<div class="notice">USD/KRW 환율 출처가 연결되지 않아 KRW 값은 표시하지 않습니다.</div>' : `<p class="data-note">KRW 환산은 USD 값 × USD/KRW ${escapeHtml(formatMetric(fxRate, "fxRate"))}입니다. 환율 갱신 ${escapeHtml(formatProviderTime(overviewPayload.fx.updatedAt))}. 코인 KRW 값은 CoinGecko 직접 KRW 호가가 아니라 환산 참고값입니다.</p>`}${rows.length ? `<div class="table-wrap"><table class="rank-table"><thead><tr><th>시총 순위</th><th>자산 / 분야·네트워크 / 프로젝트 정보</th><th>가격 (USD · KRW)</th><th>시가총액 (USD · KRW)</th><th>24시간 거래량 (USD · KRW)</th><th>유통량 (토큰)</th><th>총공급량 (토큰)</th><th>최대공급량 (토큰)</th><th>FDV (USD · KRW)</th><th>24시간</th><th>7일</th><th>30일</th><th>제공자 갱신</th></tr></thead><tbody>${body}</tbody></table></div>` : '<div class="empty">현재 페이지에서 일치하는 자산이 없습니다.</div>'}<p class="data-note">${escapeHtml(payload.disclaimer || "")} · <a href="https://www.coingecko.com/en/coins/markets" target="_blank" rel="noopener noreferrer">CoinGecko 순위 원문</a></p>`;
+        $("#rankPage").value = page;
+        $("#previousRankPage").disabled = page <= 1;
+        $("#nextRankPage").disabled = page >= 100 || payload.returned < 250;
+      }
+      async function fetchRanking(page) {
+        const input = $("#rankPage");
+        const nextPage = Number(page ?? input.value);
+        if (!Number.isInteger(nextPage) || nextPage < 1 || nextPage > 100) {
+          $("#rankResults").innerHTML = '<div class="notice">순위 페이지는 1~100 사이의 정수로 입력해 주세요.</div>';
+          return;
+        }
+        const button = $("#fetchRanking");
+        lastMarketRequestedAt = new Date().toLocaleString("ko-KR");
+        button.disabled = true;
+        $("#rankResults").innerHTML = '<div class="status-line">CoinGecko 시총 순위를 조회 중입니다…</div>';
+        try {
+          const response = await fetch(`/api/research?mode=rank&page=${nextPage}`, { headers: { Accept: "application/json" }, cache: "no-store" });
+          let result;
+          try { result = await response.json(); }
+          catch { throw new Error("서버가 JSON이 아닌 응답을 반환했습니다. API 경로와 배포 상태를 확인해 주세요."); }
+          if (!response.ok) throw new Error(result.error || `순위 조회 실패 (${response.status})`);
+          setConnectionStatus(`CoinGecko 시장 API 응답 확인 · ${result.fetchedAt ? new Date(result.fetchedAt).toLocaleString("ko-KR") : "응답 시각 확인 불가"} · 틱 실시간 아님`);
+          renderRanking(result, $("#rankFilter").value);
+        } catch (error) {
+          console.error("Market ranking request failed.", error);
+          setConnectionStatus("CoinGecko 순위 API 조회 실패 — 현재 순위 확인 불가");
+          $("#rankResults").innerHTML = `<div class="notice">${escapeHtml(error.message)} 시총 순위를 정상 조회하지 못했습니다. 오류를 빈 목록으로 바꾸지 않았습니다.</div>`;
+        } finally {
+          button.disabled = false;
+        }
+      }
+      $("#fetchRanking").addEventListener("click", () => fetchRanking());
+      $("#previousRankPage").addEventListener("click", () => fetchRanking(Number($("#rankPage").value) - 1));
+      $("#nextRankPage").addEventListener("click", () => fetchRanking(Number($("#rankPage").value) + 1));
+      $("#rankResults").addEventListener("click", (event) => {
+        const button = event.target.closest("[data-rank-coin-id]");
+        if (!button) return;
+        $("#liveGecko").value = button.dataset.rankCoinId;
+        $("#liveSymbol").value = button.dataset.rankSymbol || "";
+        setTab("market");
+        $("#fetchMarket").click();
+        $("#liveResults").scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+      $("#rankFilter").addEventListener("input", () => {
+        if (rankingPayload) renderRanking(rankingPayload, $("#rankFilter").value);
+      });
+      function formatMomentum(coin) {
+        const week = coin.change7dPct;
+        const month = coin.change30dPct;
+        if (!Number.isFinite(week) || !Number.isFinite(month)) return "기간 변화 확인 불가";
+        if (week > 0 && month > 0) return "7일·30일 모두 양수 (모멘텀 관찰)";
+        if (week < 0 && month < 0) return "7일·30일 모두 음수 (약세 관찰)";
+        return "기간별 방향 혼조";
+      }
+      let discoveryCoins = [];
+      function renderDiscoveryResults(coins, details) {
+        const ordered = [...coins].sort((a, b) => (a.rank ?? Number.MAX_SAFE_INTEGER) - (b.rank ?? Number.MAX_SAFE_INTEGER));
+        discoveryCoins = ordered;
+        const shown = ordered.slice(0, 100);
+        const fxRate = overviewPayload?.fx?.status === "ok" ? overviewPayload.fx.usdKrw : null;
+        const rows = shown.map((coin) => `<tr><td>${escapeHtml(formatMetric(coin.rank, "rank"))}</td><td>${safeHttpsLink(coin.url, `${coin.name || "이름 확인 불가"} (${coin.symbol || "티커 확인 불가"})`) || escapeHtml(`${coin.name || "이름 확인 불가"} (${coin.symbol || "티커 확인 불가"})`)}</td><td>${escapeHtml(formatDualCurrency(coin.priceUsd, fxRate, "priceUsd"))}</td><td>${escapeHtml(formatDualCurrency(coin.marketCapUsd, fxRate))}</td><td>${escapeHtml(formatDualCurrency(coin.volume24hUsd, fxRate))}</td><td>${escapeHtml(formatMetric(coin.circulatingSupply, "circulatingSupply"))}</td><td>${escapeHtml(formatMetric(coin.totalSupply, "totalSupply"))}</td><td>${escapeHtml(formatMetric(coin.maxSupply, "maxSupply"))}</td><td>${escapeHtml(formatMetric(coin.change24hPct, "change24hPct"))}</td><td>${escapeHtml(formatMetric(coin.change7dPct, "change7dPct"))}</td><td>${escapeHtml(formatMetric(coin.change30dPct, "change30dPct"))}</td><td>${escapeHtml(formatProviderTime(coin.lastUpdated))}</td><td>${escapeHtml(formatMomentum(coin))}</td><td><button class="button" type="button" data-save-discovery-id="${escapeHtml(coin.id)}" ${coin.id ? "" : "disabled"}>후보로 저장</button> <button class="button" type="button" data-discovery-id="${escapeHtml(coin.id)}" data-discovery-symbol="${escapeHtml(coin.symbol)}" ${coin.id ? "" : "disabled"}>시장 자료 조회</button></td></tr>`).join("");
+        const partial = details.error ? `<p class="notice">조회가 중단되어 일부 페이지까지만 확인했습니다: ${escapeHtml(details.error)}. 아래 후보는 완료된 페이지의 부분 결과입니다.</p>` : "";
+        const stopped = details.cancelled ? "사용자가 중단한 부분 결과" : "검색 완료";
+        const applied = `시총 ≤ ${formatUsd(details.capMax)}${details.minCap === null ? "" : ` · 시총 ≥ ${formatUsd(details.minCap)}`}${details.minVolume === null ? "" : ` · 24시간 거래량 ≥ ${formatUsd(details.minVolume)}`}`;
+        const notApplied = "체인·위험 성향·관찰 기간·환매 기준·프로젝트 수익/언락/보안 데이터는 이번 선별에 적용되지 않았습니다.";
+        $("#discoveryResults").innerHTML = `<div class="status-line">${stopped}: 시작 ${escapeHtml(details.startedAt)} · 마지막 서버 응답 ${escapeHtml(details.lastFetchedAt || "확인 불가")} · 조회 완료 ${details.pages} / ${details.maxPages}페이지 (${details.pages * 250}행 이하) · 시총 조건 후보 ${details.capCandidates}개 · 필터 통과 ${coins.length}개 · 필수 값 누락으로 제외 ${details.missing}개. 표시 순서는 CoinGecko 시총 순위이며 점수/추천이 아닙니다.</div><p class="data-note"><b>실제 적용 기준:</b> ${escapeHtml(applied)}. ${escapeHtml(notApplied)}</p>${fxRate ? `<p class="data-note">USD/KRW ${escapeHtml(formatMetric(fxRate, "fxRate"))} 기준 환산 참고값 · 환율 갱신 ${escapeHtml(formatProviderTime(overviewPayload.fx.updatedAt))}. 각 코인 가격은 환율 제공자의 갱신 주기와 다를 수 있습니다.</p>` : '<p class="notice">USD/KRW 환율을 가져오지 못해 한화 값은 표시하지 않습니다.</p>'}${partial}${rows.length ? `<div class="table-wrap"><table class="rank-table"><thead><tr><th>순위</th><th>자산</th><th>가격 (USD · KRW)</th><th>시가총액 (USD · KRW)</th><th>24시간 거래량 (USD · KRW)</th><th>유통량 (토큰)</th><th>총공급량 (토큰)</th><th>최대공급량 (토큰)</th><th>24시간</th><th>7일</th><th>30일</th><th>자료 갱신</th><th>단기 모멘텀</th><th>다음 단계</th></tr></thead><tbody>${rows}</tbody></table></div>` : '<div class="empty">설정한 조회 범위와 필터 안에 후보가 없습니다. 이는 시장 전체에 후보가 없다는 뜻이 아닙니다. 검색 범위를 늘리거나 선택 필터를 확인하세요.</div>'}<p class="data-note">표본은 ${details.firstRank ?? "확인 불가"}~${details.lastRank ?? "확인 불가"}위까지 조회했습니다. 페이지마다 호출 시각이 달라질 수 있으며, 개별 행의 제공자 갱신 시각을 우선 확인하세요. 세부 분야·네트워크는 각 종목 정보 조회 전까지 확인 불가입니다. 거래량은 DEX 유동성·체결 가능성을 뜻하지 않으며, 7/30일 양수도 상승 추세 전환이나 매수 신호가 아닙니다. 최대 100개만 표시합니다.</p>`;
+      }
+      async function runFinder() {
+        if (discoveryController || trendScanController) return;
+        if (location.protocol === "file:") {
+          setConnectionStatus("로컬 file:// 모드 — 실시간 API 연결 안 됨");
+          $("#discoveryResults").innerHTML = '<div class="notice">실제 후보 탐색은 Vercel 서버 API가 필요합니다. GitHub에 올린 후 Vercel에 배포한 주소에서 실행하세요. 이 브라우저 로컬 파일은 임의 후보로 대체하지 않습니다.</div>';
+          return;
+        }
+        const capMax = Number(state.profile.capMax);
+        const minCapText = $("#discoveryMinCap").value.trim();
+        const minVolumeText = $("#discoveryMinVolume").value.trim();
+        const minCap = minCapText === "" ? null : Number(minCapText);
+        const minVolume = minVolumeText === "" ? null : Number(minVolumeText);
+        const maxPages = Number($("#discoveryPages").value);
+        if (!Number.isFinite(capMax) || capMax < 0 || !Number.isInteger(maxPages) || maxPages < 1 || maxPages > 100 ||
+            (minCap !== null && (!Number.isFinite(minCap) || minCap < 0)) ||
+            (minVolume !== null && (!Number.isFinite(minVolume) || minVolume < 0))) {
+          $("#discoveryResults").innerHTML = '<div class="notice">시총 상한 및 선택 필터의 숫자 범위를 확인해 주세요.</div>';
+          return;
+        }
+        await fetchMarketOverview();
+        discoveryController = new AbortController();
+        const controller = discoveryController;
+        const startedAt = new Date().toLocaleString("ko-KR");
+        const candidates = [];
+        let pages = 0;
+        let capCandidates = 0;
+        let missing = 0;
+        let firstRank = null;
+        let lastRank = null;
+        let lastFetchedAt = null;
+        let errorMessage = "";
+        let cancelled = false;
+        $("#runFinder").disabled = true;
+        $("#cancelFinder").disabled = false;
+        const maxRank = maxPages * 250;
+        try {
+          for (let page = 1; page <= maxPages; page += 1) {
+            $("#discoveryResults").innerHTML = `<div class="status-line discovery-progress">요청 ${page}/${maxPages}페이지 중… 공개 API 제한을 고려해 페이지 사이 약 12초 대기합니다. ${maxPages}페이지 탐색은 최대 약 ${Math.ceil(maxPages * 12 / 60)}분이 걸릴 수 있습니다. 각 페이지의 시장 데이터 시각은 서로 다를 수 있습니다.</div>`;
+            const response = await fetch(`/api/research?mode=rank&page=${page}`, {
+              headers: { Accept: "application/json" },
+              cache: "no-store",
+              signal: controller.signal
+            });
+            let result;
+            try { result = await response.json(); }
+            catch { throw new Error("API가 JSON이 아닌 응답을 반환했습니다. 배포 상태를 확인해 주세요."); }
+            if (!response.ok) throw new Error(result.error || `시총 페이지 ${page} 조회 실패 (${response.status})`);
+            pages += 1;
+            lastFetchedAt = result.fetchedAt ? new Date(result.fetchedAt).toLocaleString("ko-KR") : null;
+            setConnectionStatus(`CoinGecko 시장 API 응답 확인 · ${lastFetchedAt || "시각 확인 불가"} · 틱 실시간 아님`);
+            if (!Array.isArray(result.coins)) throw new Error(`시총 페이지 ${page} 응답에 종목 목록이 없어 검색을 중단했습니다.`);
+            const pageCoins = result.coins;
+            pageCoins.forEach((coin) => {
+              if (Number.isFinite(coin.rank)) {
+                firstRank = firstRank === null ? coin.rank : Math.min(firstRank, coin.rank);
+                lastRank = lastRank === null ? coin.rank : Math.max(lastRank, coin.rank);
+              }
+              if (!Number.isFinite(coin.marketCapUsd)) { missing += 1; return; }
+              if (coin.marketCapUsd > capMax || (minCap !== null && coin.marketCapUsd < minCap)) return;
+              capCandidates += 1;
+              if (minVolume !== null && !Number.isFinite(coin.volume24hUsd)) { missing += 1; return; }
+              if (minVolume !== null && coin.volume24hUsd < minVolume) return;
+              candidates.push(coin);
+            });
+            $("#discoveryResults").innerHTML = `<div class="status-line discovery-progress">조회 중 ${page}/${maxPages}페이지 · 시총 범위 후보 ${capCandidates}개 · 필터 통과 ${candidates.length}개 · 최신 서버 응답 ${escapeHtml(lastFetchedAt || "확인 불가")}</div>`;
+            if (pageCoins.length < 250) break;
+            if (page < maxPages) {
+              await new Promise((resolve, reject) => {
+                if (controller.signal.aborted) {
+                  reject(new DOMException("Search cancelled.", "AbortError"));
+                  return;
+                }
+                const timeout = setTimeout(() => {
+                  controller.signal.removeEventListener("abort", abort);
+                  resolve();
+                }, 12000);
+                const abort = () => {
+                  clearTimeout(timeout);
+                  controller.signal.removeEventListener("abort", abort);
+                  reject(new DOMException("Search cancelled.", "AbortError"));
+                };
+                controller.signal.addEventListener("abort", abort, { once: true });
+              });
+            }
+          }
+        } catch (error) {
+          if (error.name === "AbortError") cancelled = true;
+          else {
+            console.error("Automatic candidate discovery failed.", error);
+            errorMessage = error.message || "출처 조회 실패";
+          }
+        } finally {
+          discoveryController = null;
+          $("#runFinder").disabled = false;
+          $("#cancelFinder").disabled = true;
+          renderDiscoveryResults(candidates, {
+            startedAt,
+            lastFetchedAt,
+            pages,
+            maxPages,
+            capCandidates,
+            missing,
+            firstRank,
+            lastRank,
+            error: errorMessage,
+            cancelled,
+            capMax,
+            minCap,
+            minVolume
+          });
+        }
+        if (!pages && !cancelled && errorMessage) {
+          $("#discoveryResults").innerHTML = `<div class="notice">시총 데이터를 가져오지 못해 후보를 만들지 않았습니다: ${escapeHtml(errorMessage)}</div>`;
+        }
+        if (pages && lastRank !== null && lastRank < maxRank && !cancelled && !errorMessage) {
+          $("#discoveryResults").insertAdjacentHTML("afterbegin", '<div class="status-line">제공자 데이터가 설정한 최대 페이지보다 먼저 끝났습니다. 누락된 종목을 임의로 보충하지 않았습니다.</div>');
+        }
+      }
+      let trendCandidates = [];
+      function renderTrendScanResults(results, details) {
+        trendCandidates = results;
+        const fxRate = overviewPayload?.fx?.status === "ok" ? overviewPayload.fx.usdKrw : null;
+        const rows = results.map((coin, index) => {
+          const trend = coin.trend;
+          const metrics = trend.metrics || {};
+          const label = trend.status === "post_correction_early_reversal"
+            ? "조정 후 상승 전환 초입 후보"
+            : "초기 회복 관찰 — 20일선 회복 전";
+          return `<tr><td>${escapeHtml(formatMetric(coin.rank, "rank"))}</td><td>${safeHttpsLink(coin.url, `${coin.name || "이름 확인 불가"} (${coin.symbol || "티커 확인 불가"})`) || escapeHtml(`${coin.name || "이름 확인 불가"} (${coin.symbol || "티커 확인 불가"})`)}</td><td>${escapeHtml(formatDualCurrency(coin.priceUsd, fxRate, "priceUsd"))}</td><td>${escapeHtml(formatDualCurrency(coin.marketCapUsd, fxRate))}</td><td>${escapeHtml(formatDualCurrency(coin.volume24hUsd, fxRate))}</td><td>${escapeHtml(formatMetric(coin.change7dPct, "change7dPct"))}</td><td>${escapeHtml(formatMetric(coin.change30dPct, "change30dPct"))}</td><td>${escapeHtml(formatMetric(metrics.drawdownFrom30dHighPct, "change30dPct"))}</td><td>${escapeHtml(formatMetric(metrics.priceVsSma20Pct, "change30dPct"))}</td><td><b>${label}</b><div class="small-note">저점 높임: ${metrics.higherLow ? "예" : "아니오"} · 20일선 상승: ${metrics.risingSma20 ? "예" : "아니오"}</div></td><td>${escapeHtml(formatProviderTime(coin.lastUpdated))}<div class="small-note">일별 가격 자료: ${escapeHtml(formatProviderTime(coin.latestPricePointAt))}</div></td><td><button class="button" type="button" data-trend-save-id="${index}">후보로 저장</button> <button class="button" type="button" data-trend-market-id="${index}">상세 확인</button></td></tr>`;
+        }).join("");
+        const stateLabel = details.cancelled ? "사용자가 중단한 부분 결과" : details.error ? "일부 조회 실패 — 완료 자료만 표시" : "탐색 완료";
+        const failures = details.failures.length
+          ? `<p class="notice">90일 이력 조회 실패 ${details.failures.length}건: ${details.failures.slice(0, 8).map((failure) => `${escapeHtml(failure.name)} — ${escapeHtml(failure.message)}`).join("; ")}${details.failures.length > 8 ? " 등" : ""}. 실패 종목은 후보로 간주하지 않았습니다.</p>`
+          : "";
+        $("#trendResults").innerHTML = `<div class="status-line">${stateLabel} · 시작 ${escapeHtml(details.startedAt)} · 마지막 자료 응답 ${escapeHtml(details.lastFetchedAt || "확인 불가")} · 순위 페이지 ${details.pages}/${details.maxPages} · 페이지에서 확인한 자산 ${details.examined}개 · 1차 조건 통과 ${details.prefiltered}개 · 90일 이력 확인 ${details.checked}개 · 1차 조건 자료 누락 ${details.missing}개 · 초기 전환/회복 후보 ${results.length}개</div><p class="data-note"><b>실제 적용 기준:</b> 시총 ≤ ${escapeHtml(formatUsd(details.capMax))}${details.minCap === null ? "" : ` · 시총 ≥ ${escapeHtml(formatUsd(details.minCap))}`}${details.minVolume === null ? "" : ` · 24시간 거래량 ≥ ${escapeHtml(formatUsd(details.minVolume))}`} · 1차 검색은 7일 변화율 양수 및 30일 변화율 +5% 이하 · 90일 이력에서 최근 30일 고점 대비 -8% 이상 조정 또는 30일 수익률 -8% 이하와 7일 저점 높임·20일선 상승 확인. 초입 후보는 현재 가격이 20일선 위인 경우입니다.</p>${fxRate ? `<p class="data-note">가격·시총·거래량의 KRW는 USD/KRW ${escapeHtml(formatMetric(fxRate, "fxRate"))} 기준 참고 환산 · 환율 갱신 ${escapeHtml(formatProviderTime(overviewPayload.fx.updatedAt))}.</p>` : '<p class="notice">USD/KRW 환율 자료가 연결되지 않아 한화 값은 표시하지 않습니다.</p>'}${details.error ? `<p class="notice">탐색이 조기 종료됐습니다: ${escapeHtml(details.error)}. 완료된 응답만 사용했습니다.</p>` : ""}${failures}${results.length ? `<div class="table-wrap"><table class="rank-table"><thead><tr><th>순위</th><th>자산</th><th>가격 USD · KRW</th><th>시총 USD · KRW</th><th>24h 거래량 USD · KRW</th><th>7일</th><th>30일</th><th>30일 고점 대비</th><th>현재가 vs 20일선</th><th>규칙 판정</th><th>자료 갱신 시각</th><th>다음 단계</th></tr></thead><tbody>${rows}</tbody></table></div>` : '<div class="empty">현재 조회한 표본에서 조건을 충족한 후보가 없습니다. 전체 시장에 후보가 없다는 뜻은 아닙니다. 범위를 늘리거나 나중에 다시 확인하세요.</div>'}<p class="data-note">90일 일별 가격 기반이며 자료 시점은 자산별로 다를 수 있습니다. 거래량은 DEX 유동성·실제 체결 가능성을 뜻하지 않습니다. 이 화면은 수익 가능성, 토큰 신원, 온체인 사용량, 언락·보안을 판정하지 않습니다.</p>`;
+      }
+      async function runTrendScan() {
+        if (trendScanController || discoveryController) return;
+        if (location.protocol === "file:") {
+          setConnectionStatus("로컬 file:// 모드 — 실시간 API 연결 안 됨");
+          $("#trendResults").innerHTML = '<div class="notice">실제 추세 후보 탐색에는 Vercel API가 필요합니다. 이 로컬 파일에서는 시장 데이터를 임의로 표시하지 않습니다.</div>';
+          return;
+        }
+        const capMax = Number(state.profile.capMax);
+        const minCapText = $("#trendMinCap").value.trim();
+        const minVolumeText = $("#trendMinVolume").value.trim();
+        const minCap = minCapText === "" ? null : Number(minCapText);
+        const minVolume = minVolumeText === "" ? null : Number(minVolumeText);
+        const maxPages = Number($("#trendPages").value);
+        const maxChecks = Number($("#trendChecks").value);
+        if (!Number.isFinite(capMax) || capMax < 0 || !Number.isInteger(maxPages) || maxPages < 1 || maxPages > 12 ||
+            ![5, 8, 12].includes(maxChecks) ||
+            (minCap !== null && (!Number.isFinite(minCap) || minCap < 0)) ||
+            (minVolume !== null && (!Number.isFinite(minVolume) || minVolume < 0))) {
+          $("#trendResults").innerHTML = '<div class="notice">시총 상한, 페이지 범위, 심층 확인 수와 선택 필터의 숫자를 확인해 주세요.</div>';
+          return;
+        }
+        trendScanController = new AbortController();
+        const controller = trendScanController;
+        const startedAt = new Date().toLocaleString("ko-KR");
+        const screened = new Map();
+        const matches = [];
+        const failures = [];
+        let pages = 0;
+        let examined = 0;
+        let missing = 0;
+        let checked = 0;
+        let lastFetchedAt = null;
+        let errorMessage = "";
+        let cancelled = false;
+        $("#runTrendScan").disabled = true;
+        $("#cancelTrendScan").disabled = false;
+        $("#runFinder").disabled = true;
+        try {
+          await fetchMarketOverview();
+          if (controller.signal.aborted) throw new DOMException("Search cancelled.", "AbortError");
+          for (let page = 1; page <= maxPages; page += 1) {
+            $("#trendResults").innerHTML = `<div class="status-line">CoinGecko 시총 페이지 ${page}/${maxPages} 조회 중… 이후 90일 가격 이력 후보는 최대 ${maxChecks}개까지 약 12초 간격으로 확인합니다.</div>`;
+            const response = await fetch(`/api/research?mode=rank&page=${page}`, {
+              headers: { Accept: "application/json" },
+              cache: "no-store",
+              signal: controller.signal
+            });
+            let result;
+            try { result = await response.json(); }
+            catch { throw new Error("시총 API가 JSON이 아닌 응답을 반환했습니다."); }
+            if (!response.ok) throw new Error(result.error || `시총 페이지 ${page} 조회 실패 (${response.status})`);
+            if (!Array.isArray(result.coins)) throw new Error(`시총 페이지 ${page} 응답에 종목 목록이 없습니다.`);
+            pages += 1;
+            lastFetchedAt = result.fetchedAt ? new Date(result.fetchedAt).toLocaleString("ko-KR") : null;
+            setConnectionStatus(`CoinGecko 순위 응답 · ${lastFetchedAt || "시각 확인 불가"} · 틱 실시간 아님`);
+            result.coins.forEach((coin) => {
+              examined += 1;
+              if (!Number.isFinite(coin.marketCapUsd) || coin.marketCapUsd > capMax ||
+                  (minCap !== null && coin.marketCapUsd < minCap)) return;
+              if (!Number.isFinite(coin.change7dPct) || !Number.isFinite(coin.change30dPct) || !coin.id) {
+                missing += 1;
+                return;
+              }
+              if (minVolume !== null && !Number.isFinite(coin.volume24hUsd)) {
+                missing += 1;
+                return;
+              }
+              if (minVolume !== null && coin.volume24hUsd < minVolume) return;
+              if (coin.change7dPct <= 0 || coin.change30dPct > 5) return;
+              if (!screened.has(coin.id)) screened.set(coin.id, coin);
+            });
+            $("#trendResults").innerHTML = `<div class="status-line">순위 검색 ${page}/${maxPages}페이지 · ${examined}개 확인 · 1차 조건 통과 ${screened.size}개 · 심층 확인은 최대 ${maxChecks}개</div>`;
+            if (result.coins.length < 250) break;
+            if (page < maxPages) {
+              await new Promise((resolve, reject) => {
+                if (controller.signal.aborted) {
+                  reject(new DOMException("Search cancelled.", "AbortError"));
+                  return;
+                }
+                const timeout = setTimeout(() => {
+                  controller.signal.removeEventListener("abort", abort);
+                  resolve();
+                }, 12000);
+                const abort = () => {
+                  clearTimeout(timeout);
+                  controller.signal.removeEventListener("abort", abort);
+                  reject(new DOMException("Search cancelled.", "AbortError"));
+                };
+                controller.signal.addEventListener("abort", abort, { once: true });
+              });
+            }
+          }
+          const shortlist = [...screened.values()]
+            .sort((a, b) => Math.abs(a.change30dPct) - Math.abs(b.change30dPct) || b.change7dPct - a.change7dPct || (a.rank ?? Infinity) - (b.rank ?? Infinity))
+            .slice(0, maxChecks);
+          for (let index = 0; index < shortlist.length; index += 1) {
+            if (controller.signal.aborted) throw new DOMException("Search cancelled.", "AbortError");
+            if (index > 0) {
+              await new Promise((resolve, reject) => {
+                if (controller.signal.aborted) {
+                  reject(new DOMException("Search cancelled.", "AbortError"));
+                  return;
+                }
+                const timeout = setTimeout(() => {
+                  controller.signal.removeEventListener("abort", abort);
+                  resolve();
+                }, 12000);
+                const abort = () => {
+                  clearTimeout(timeout);
+                  controller.signal.removeEventListener("abort", abort);
+                  reject(new DOMException("Search cancelled.", "AbortError"));
+                };
+                controller.signal.addEventListener("abort", abort, { once: true });
+              });
+            }
+            const coin = shortlist[index];
+            $("#trendResults").innerHTML = `<div class="status-line">90일 가격 이력 심층 확인 ${index + 1}/${shortlist.length}: ${escapeHtml(coin.name)} (${escapeHtml(coin.symbol)})…</div>`;
+            try {
+              const response = await fetch(`/api/research?mode=trend&geckoId=${encodeURIComponent(coin.id)}`, {
+                headers: { Accept: "application/json" },
+                cache: "no-store",
+                signal: controller.signal
+              });
+              let result;
+              try { result = await response.json(); }
+              catch { throw new Error("가격 이력 API가 JSON이 아닌 응답을 반환했습니다."); }
+              if (!response.ok) throw new Error(result.error || `가격 이력 조회 실패 (${response.status})`);
+              lastFetchedAt = result.fetchedAt ? new Date(result.fetchedAt).toLocaleString("ko-KR") : lastFetchedAt;
+              if (!result.trend || !result.latestPricePointAt) throw new Error("90일 가격 이력에 필수 자료가 없습니다.");
+              checked += 1;
+              if (["post_correction_early_reversal", "post_correction_recovery_watch"].includes(result.trend.status)) {
+                matches.push({ ...coin, trend: result.trend, latestPricePointAt: result.latestPricePointAt });
+              }
+            } catch (error) {
+              if (error.name === "AbortError") throw error;
+              console.error(`Trend history failed for ${coin.id}.`, error);
+              failures.push({ name: `${coin.name} (${coin.symbol})`, message: error.message || "가격 이력 조회 실패" });
+            }
+          }
+        } catch (error) {
+          if (error.name === "AbortError") cancelled = true;
+          else {
+            console.error("Correction-to-reversal scan failed.", error);
+            errorMessage = error.message || "시장 데이터 조회 실패";
+          }
+        } finally {
+          trendScanController = null;
+          $("#runTrendScan").disabled = false;
+          $("#cancelTrendScan").disabled = true;
+          $("#runFinder").disabled = false;
+          renderTrendScanResults(matches, {
+            startedAt,
+            lastFetchedAt,
+            pages,
+            maxPages,
+            examined,
+            prefiltered: screened.size,
+            checked,
+            missing,
+            capMax,
+            minCap,
+            minVolume,
+            failures,
+            cancelled,
+            error: errorMessage
+          });
+        }
+      }
+      $("#runFinder").addEventListener("click", runFinder);
+      $("#runTrendScan").addEventListener("click", runTrendScan);
+      $("#refreshOverview").addEventListener("click", fetchMarketOverview);
+      $("#cancelFinder").addEventListener("click", () => discoveryController?.abort());
+      $("#cancelTrendScan").addEventListener("click", () => trendScanController?.abort());
+      $("#trendResults").addEventListener("click", (event) => {
+        const saveButton = event.target.closest("[data-trend-save-id]");
+        const marketButton = event.target.closest("[data-trend-market-id]");
+        const index = Number((saveButton || marketButton)?.dataset.trendSaveId ?? marketButton?.dataset.trendMarketId);
+        const coin = trendCandidates[index];
+        if (!coin) return;
+        if (saveButton) {
+          saveDiscoveryCandidate(coin);
+          return;
+        }
+        $("#liveGecko").value = coin.id;
+        $("#liveSymbol").value = coin.symbol || "";
+        $("#liveAddress").value = "";
+        $("#liveChain").value = "";
+        setTab("market");
+        $("#fetchMarket").click();
+      });
+      $("#discoveryResults").addEventListener("click", (event) => {
+        const saveButton = event.target.closest("[data-save-discovery-id]");
+        if (saveButton) {
+          const coin = discoveryCoins.find((item) => item.id === saveButton.dataset.saveDiscoveryId);
+          if (coin) saveDiscoveryCandidate(coin);
+          return;
+        }
+        const button = event.target.closest("[data-discovery-id]");
+        if (!button) return;
+        $("#liveGecko").value = button.dataset.discoveryId;
+        $("#liveSymbol").value = button.dataset.discoverySymbol || "";
+        $("#liveAddress").value = "";
+        $("#liveChain").value = "";
+        setTab("market");
+        $("#fetchMarket").click();
+      });
+      $("#personalKeyConsent").addEventListener("change", (event) => {
+        const accepted = event.target.checked;
+        const securePage = location.protocol === "https:";
+        $("#personalKeyFields").hidden = !accepted && securePage;
+        $("#personalCmcKey").disabled = !accepted || !securePage;
+        $("#personalCoinglassKey").disabled = !accepted || !securePage;
+        if (!accepted) clearPersonalApiKeys("동의가 해제되어 입력된 키를 지웠습니다.");
+        else $("#personalKeyStatus").textContent = "키는 브라우저 저장소에 기록되지 않습니다. 조회 요청 시 HTTPS로 앱 서버에 전달됩니다.";
+      });
+      if (location.protocol !== "https:") {
+        $("#personalKeyConsent").disabled = true;
+        $("#personalKeyFields").hidden = false;
+        $("#personalCmcKey").disabled = true;
+        $("#personalCoinglassKey").disabled = true;
+        $("#personalKeyAvailability").textContent = "입력칸 위치 안내: 현재 로컬 file:// 페이지에서는 보안상 키 입력이 비활성화되어 있습니다. Vercel HTTPS 배포 주소에서 사용하세요.";
+      }
+      $("#personalCmcKey").addEventListener("input", (event) => {
+        personalApiKeys.cmc = event.target.value.trim();
+        renewPersonalKeyExpiry();
+        $("#personalKeyStatus").textContent = personalApiKeys.cmc || personalApiKeys.coinglass
+          ? "키가 입력되었습니다. 브라우저 저장소에는 저장하지 않으며 15분 미사용 시 자동 삭제합니다."
+          : "키가 입력되지 않았습니다. 사용이 끝나면 키 지우기를 누르세요.";
+      });
+      $("#personalCoinglassKey").addEventListener("input", (event) => {
+        personalApiKeys.coinglass = event.target.value.trim();
+        renewPersonalKeyExpiry();
+        $("#personalKeyStatus").textContent = personalApiKeys.cmc || personalApiKeys.coinglass
+          ? "키가 입력되었습니다. 브라우저 저장소에는 저장하지 않으며 15분 미사용 시 자동 삭제합니다."
+          : "키가 입력되지 않았습니다. 사용이 끝나면 키 지우기를 누르세요.";
+      });
+      $("#clearPersonalKeys").addEventListener("click", () => clearPersonalApiKeys());
+      document.addEventListener("pointerdown", keyActivity, { passive: true });
+      document.addEventListener("keydown", keyActivity);
+      window.addEventListener("pagehide", () => clearPersonalApiKeys("페이지를 떠나 앱에서 키를 지웠습니다."), { once: true });
+      $("#fetchMarket").addEventListener("click", async () => {
+        const params = new URLSearchParams();
+        const values = {
+          symbol: $("#liveSymbol").value.trim(),
+          chain: $("#liveChain").value,
+          address: $("#liveAddress").value.trim(),
+          geckoId: $("#liveGecko").value.trim(),
+          protocol: $("#liveProtocol").value.trim(),
+          cmcId: $("#liveCmc").value.trim(),
+          tradingViewSymbol: $("#liveTvSymbol").value.trim()
+        };
+        Object.entries(values).forEach(([key, value]) => { if (value) params.set(key, value); });
+        if (!values.symbol && !values.geckoId && !values.address && !values.protocol && !values.cmcId) {
+          alert("티커, CoinGecko ID, DefiLlama slug, CoinMarketCap ID 또는 체인·컨트랙트 주소 중 하나를 입력해 주세요.");
+          return;
+        }
+        const button = $("#fetchMarket");
+        const requestHeaders = { Accept: "application/json" };
+        if ($("#personalKeyConsent").checked) {
+          if (personalApiKeys.cmc) requestHeaders["X-User-CMC-API-Key"] = personalApiKeys.cmc;
+          if (personalApiKeys.coinglass) requestHeaders["X-User-CoinGlass-API-Key"] = personalApiKeys.coinglass;
+        }
+        lastMarketRequestedAt = new Date().toLocaleString("ko-KR");
+        button.disabled = true;
+        $("#liveResults").innerHTML = '<div class="status-line">무료 공개 데이터 제공자에 조회 중입니다…</div>';
+        try {
+          const response = await fetch(`/api/research?${params.toString()}`, { headers: requestHeaders, cache: "no-store" });
+          let result;
+          try { result = await response.json(); }
+          catch { throw new Error("서버가 JSON이 아닌 응답을 반환했습니다. API 경로와 배포 상태를 확인해 주세요."); }
+          if (!response.ok) throw new Error(result.error || `조회 요청 실패 (${response.status})`);
+          setConnectionStatus(`요청한 공개 데이터 API 응답 확인 · ${result.fetchedAt ? new Date(result.fetchedAt).toLocaleString("ko-KR") : "응답 시각 확인 불가"} · 제공자 갱신 시각 확인 필요 · 틱 실시간 아님`);
+          renderMarketResults(result);
+        } catch (error) {
+          console.error("Market research request failed.", error);
+          setConnectionStatus("시장 데이터 API 조회 실패 — 해당 자산 자료 확인 불가");
+          const deploymentHint = location.protocol === "file:" ? "앱을 file://로 직접 열었다면 Vercel 배포 주소에서 조회해야 합니다." : "Vercel 배포 경로와 API 상태를 확인한 뒤 다시 시도하세요.";
+          $("#liveResults").innerHTML = `<div class="notice">${escapeHtml(error.message)}<br>${escapeHtml(deploymentHint)}</div>`;
+          renderRedTeam({ requested: values, sources: [{ source: "시장 데이터 API", status: "unavailable" }] });
+        } finally {
+          renewPersonalKeyExpiry();
+          button.disabled = false;
+        }
+      });
+      function showTradingView() {
+        const symbol = $("#liveTvSymbol").value.trim().toUpperCase();
+        if (!/^[A-Z0-9:_-]{1,40}$/.test(symbol)) {
+          alert("TradingView 거래소 심볼을 확인해 주세요. 예: BINANCE:ETHUSDT");
+          return;
+        }
+        const query = new URLSearchParams({
+          symbol,
+          interval: "D",
+          hide_side_toolbar: "1",
+          allow_symbol_change: "true",
+          save_image: "false",
+          theme: "light",
+          style: "1",
+          timezone: "Etc/UTC",
+          withdateranges: "true",
+          hideideas: "true",
+          locale: "kr"
+        });
+        const frame = $("#tradingViewFrame");
+        frame.src = `https://www.tradingview.com/widgetembed/?${query.toString()}`;
+        frame.hidden = false;
+      }
+      $("#showChart").addEventListener("click", showTradingView);
+    $("#profileForm").addEventListener("submit", saveProfile);
+    $("#resetProfile").addEventListener("click", () => {
+      state.profile = { ...DEFAULT_PROFILE };
+      persist();
+      renderProfile();
+    });
+    document.querySelectorAll(".tab").forEach((tab) => tab.addEventListener("click", () => {
+      setTab(tab.dataset.tab);
+      if (tab.dataset.tab === "market") {
+        if (location.protocol === "file:") {
+          setConnectionStatus("로컬 file:// 모드 — 실시간 API 연결 안 됨");
+          $("#marketOverview").innerHTML = '<div class="notice">실시간에 가까운 제공자 데이터를 조회하려면 Vercel 배포 URL이 필요합니다. 이 로컬 파일에서는 시장·환율·순위를 조회하지 못합니다.</div>';
+          $("#rankResults").innerHTML = '<div class="notice">CoinGecko 시총 순위 API가 연결되지 않았습니다. 종목이나 시세를 임의로 표시하지 않습니다.</div>';
+        } else {
+          fetchMarketOverview();
+          if (!rankingPayload && !$("#fetchRanking").disabled) fetchRanking(1);
+        }
+      }
+    }));
+    document.querySelectorAll("[data-go]").forEach((button) => button.addEventListener("click", () => setTab(button.dataset.go)));
+    $("#buildPrompt").addEventListener("click", () => { $("#promptOutput").value = buildResearchPrompt(); });
+    $("#copyPrompt").addEventListener("click", async () => {
+      const prompt = $("#promptOutput").value || buildResearchPrompt();
+      $("#promptOutput").value = prompt;
+      try { await copyText(prompt); alert("조사 요청문을 복사했습니다."); }
+      catch (error) { console.error("Could not copy prompt.", error); alert("복사하지 못했습니다. 요청문 칸에서 직접 선택해 복사해 주세요."); }
+    });
+    $("#openClaude").addEventListener("click", () => {
+      const prompt = $("#promptOutput").value || buildResearchPrompt();
+      $("#promptOutput").value = prompt;
+      window.open("https://claude.ai/new", "_blank", "noopener,noreferrer");
+      copyText(prompt).catch((error) => console.error("Could not copy prompt for Claude.", error));
+    });
+    $("#newCandidate").addEventListener("click", createCandidate);
+    $("#saveCandidate").addEventListener("click", () => {
+      const candidate = currentCandidate();
+      if (!candidate) { alert("먼저 '새 후보 등록'을 눌러 주세요."); return; }
+      syncCandidateFields();
+      if (!candidate.name || !candidate.ticker) {
+        alert("프로젝트명과 티커를 입력해 주세요.");
+        return;
+      }
+      const sourceUrls = [
+        candidate.identitySource,
+        candidate.tradePath,
+        ...[...document.querySelectorAll('.criterion [data-field="source"]')].map((input) => input.value.trim())
+      ].filter(Boolean);
+      const invalidSource = sourceUrls
+        .some((source) => {
+          try { return new URL(source).protocol !== "https:"; }
+          catch { return true; }
+      });
+      if (invalidSource) {
+        alert("출처와 거래 경로에는 유효한 HTTPS URL을 입력해 주세요.");
+        return;
+      }
+      syncCandidateCriteria();
+      persist();
+      renderAll();
+      if (location.protocol === "file:") setConnectionStatus("로컬 file:// 모드 — 실시간 API 연결 안 됨");
+      else setConnectionStatus("배포 API 미확인 — 시장·환율 자료 조회 전");
+    });
+    $("#panel-review").addEventListener("input", () => {
+      if (!currentCandidate()) return;
+      syncCandidateFields();
+      syncCandidateCriteria();
+      persist();
+    });
+    $("#panel-review").addEventListener("change", () => {
+      if (!currentCandidate()) return;
+      syncCandidateFields();
+      syncCandidateCriteria();
+      persist();
+    });
+    $("#criteria").addEventListener("click", (event) => {
+      const button = event.target.closest("[data-status]");
+      if (!button) return;
+      const card = button.closest(".criterion");
+      const status = button.dataset.status;
+      const criterionIndex = card.dataset.criterion;
+      card.querySelectorAll("[data-status]").forEach((option) => option.setAttribute("aria-pressed", String(option === button)));
+      syncCandidateCriteria();
+      persist();
+      $("#identityWarning")?.remove();
+      $("#unverifiedEvidence")?.remove();
+      renderCriteria();
+      $(`.criterion[data-criterion="${criterionIndex}"] [data-status="${status}"]`)?.focus();
+    });
+    $("#buildCandidatePrompt").addEventListener("click", () => {
+      const candidate = currentCandidate();
+      if (!candidate || !candidate.name || !candidate.ticker) { alert("후보를 등록한 뒤 프로젝트명과 티커를 입력하고 검토 내용을 저장해 주세요."); return; }
+      syncCandidateFields();
+      syncCandidateCriteria();
+      persist();
+      $("#promptOutput").value = buildResearchPrompt(candidate);
+      setTab("discover");
+    });
+    $("#reviewCandidateMarket").addEventListener("click", () => {
+      const candidate = currentCandidate();
+      if (!candidate?.geckoId) {
+        $("#reviewNotice").textContent = "저장된 CoinGecko ID가 없습니다. ID를 확인해 후보에 입력하거나 시장·온체인 데이터 탭에서 직접 조회하세요.";
+        $("#reviewNotice").hidden = false;
+        return;
+      }
+      $("#liveGecko").value = candidate.geckoId;
+      $("#liveSymbol").value = candidate.ticker || "";
+      $("#liveAddress").value = candidate.contract || "";
+      $("#liveChain").value = (candidate.chain || "").toLowerCase();
+      setTab("market");
+      $("#fetchMarket").click();
+    });
+    $("#deleteCandidate").addEventListener("click", () => {
+      if (!currentCandidate()) return;
+      if (!confirm("현재 후보와 기록을 삭제할까요?")) return;
+      state.candidates = state.candidates.filter((candidate) => candidate.id !== currentId);
+      currentId = state.candidates[0]?.id || null;
+      persist();
+      $("#candidateName").value = "";
+      $("#ticker").value = "";
+      $("#chain").value = "";
+      $("#candidateGeckoId").value = "";
+      $("#contract").value = "";
+      $("#migration").value = "unknown";
+      $("#identitySource").value = "";
+      $("#tradePath").value = "";
+      renderAll();
+    });
+    $("#candidateList").addEventListener("click", (event) => {
+      const button = event.target.closest("[data-open-candidate]");
+      if (!button) return;
+      const candidate = state.candidates.find((item) => item.id === button.dataset.openCandidate);
+      if (candidate) loadCandidate(candidate);
+    });
+    $("#exportData").addEventListener("click", () => {
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "gems-research-backup.json";
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+    });
+    $("#importData").addEventListener("change", async (event) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      try {
+        const parsed = JSON.parse(await file.text());
+        if (!validateBackup(parsed)) throw new Error("Unsupported or invalid backup structure");
+        if (!confirm("현재 프로필과 후보 목록을 백업 파일의 내용으로 바꿀까요?")) return;
+        state = { profile: { ...DEFAULT_PROFILE, ...parsed.profile }, candidates: parsed.candidates, currentId: parsed.currentId || null };
+        currentId = state.currentId;
+        persist();
+        renderAll();
+        const selected = currentCandidate();
+        if (selected) loadCandidate(selected);
+        else {
+          $("#candidateName").value = "";
+          $("#ticker").value = "";
+          $("#chain").value = "";
+          $("#candidateGeckoId").value = "";
+          $("#contract").value = "";
+        }
+        alert("백업을 불러왔습니다.");
+      } catch (error) {
+        console.error("Could not import research backup.", error);
+        alert("백업을 읽지 못했습니다. 이 앱에서 내보낸 JSON 파일인지 확인해 주세요.");
+      } finally {
+        event.target.value = "";
+      }
+    });
+    $("#clearData").addEventListener("click", () => {
+      if (!confirm("이 브라우저에 저장한 프로필과 모든 후보 기록을 삭제할까요?")) return;
+      localStorage.removeItem(STORAGE_KEY);
+      state = { profile: { ...DEFAULT_PROFILE }, candidates: [], currentId: null };
+      currentId = null;
+      renderAll();
+      setTab("profile");
+    });
+    state.candidates.forEach((candidate) => {
+      if (!Array.isArray(candidate.criteria)) candidate.criteria = CRITERIA.map(() => ({ status: "unknown", evidence: "", source: "", asOf: "" }));
+    });
+    if (!state.candidates.some((candidate) => candidate.id === currentId)) currentId = null;
+    renderAll();
+    setTab("profile");
+    if (location.protocol === "file:") setConnectionStatus("로컬 file:// 모드 — 실시간 API 연결 안 됨");
+    else setConnectionStatus("배포 API 미확인 — 시장·환율 자료 조회 전");
+    const firstCandidate = currentCandidate();
+    if (firstCandidate) {
+      $("#candidateName").value = firstCandidate.name || "";
+      $("#ticker").value = firstCandidate.ticker || "";
+      $("#chain").value = firstCandidate.chain || "";
+      $("#candidateGeckoId").value = firstCandidate.geckoId || "";
+      $("#contract").value = firstCandidate.contract || "";
+      $("#identitySource").value = firstCandidate.identitySource || "";
+      renderCriteria();
+      setTab("profile");
+    }
+  </script>
+</body>
+</html>
