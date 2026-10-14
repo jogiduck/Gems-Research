@@ -1,0 +1,9 @@
+{
+  "name": "gems-research-workbench",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Day 1 Crypto Momentum Research Workbench (static frontend + serverless API, zero dependencies)",
+  "engines": {
+    "node": "20.x"
+  }
+}
