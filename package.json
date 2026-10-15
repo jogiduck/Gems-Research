@@ -4,6 +4,6 @@
   "private": true,
   "description": "Day 1 Crypto Momentum Research Workbench (static frontend + serverless API, zero dependencies)",
   "engines": {
-    "node": "20.x"
+    "node": "24.x"
   }
 }
