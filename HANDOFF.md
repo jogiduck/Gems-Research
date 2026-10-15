@@ -10,7 +10,7 @@
 ## 정본 폴더
 - `C:\Users\admin\Desktop\my apple\GemsResearch` (배포용, 현재 작업본)
 - `.../my apple 2/finder`는旧 작업본. 2026-10-15에 finder→GemsResearch로 덮어쓰기 완료, SHA256 동일 확인
-- Coin Finder 라인(파랑·14섹터)은 별개 줄기. 함부로 합치지 말 것
+- Coin Finder 라인 기능(파랑 테마 제외, 14섹터·업비트·파생·고래벽은 병합됨). 이후 수정은 한 번에 한 손만. 겹치면 먼저 물을 것
 
 ## 구현 완료 (GemsResearch/index.html + api/research.js)
 - 후보탐색: 크기탭·14섹터(보안·프라이버시, 결제·금융 포함)·달러/래핑 제외·추천도 상중하·상위30컷·대량등록
